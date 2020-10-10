@@ -2,11 +2,24 @@
 
 namespace virtual_autoclicker_console
 {
+    /// <summary>
+    /// Written in lower case since all commands are entered in lowercase.
+    /// </summary>
+    public enum Commands
+    {
+        unknown,
+        startautoclicker,
+        start,
+        stop,
+        stopautoclicker,
+        picnic,
+    }
+
     public static class CommandHandler
     {
-        public static void ParseCommand(string command, string[]? args)
+        public static void ParseCommand(string commandStr, string[]? args)
         {
-            if (string.IsNullOrWhiteSpace(command))
+            if (string.IsNullOrWhiteSpace(commandStr))
                 return;
 
             var acWorker = VacEnvironment.GetAcWorker();
@@ -18,11 +31,13 @@ namespace virtual_autoclicker_console
 
             try
             {
-                switch (command.ToLower())
+                Enum.TryParse<Commands>(commandStr, out var command);
+                switch (command)
                 {
-                    case "startautoclicker":
+                    case Commands.start:
+                    case Commands.startautoclicker:
                         {
-                            if (args != null && args.Length <= 2)
+                            if (args == null || args.Length <= 2)
                             {
                                 Console.WriteLine("Command usage: 'startautoclicker P X,Y I' please refer to the readme.md file for further assistance.");
                                 break;
@@ -38,15 +53,16 @@ namespace virtual_autoclicker_console
 
                             break;
                         }
-                    case "stopautoclicker":
-                    case "picnic":
-                    case "stop":
+                    case Commands.stop:
+                    case Commands.stopautoclicker:
+                    case Commands.picnic:
                         {
                             Picnic(acWorker);
                             break;
                         }
+                    case Commands.unknown:
                     default:
-                        ConsoleHelper.WriteWarning($"No command found named '{command.ToLower()}'");
+                        ConsoleHelper.WriteWarning($"No command found named '{commandStr}'");
                         break;
                 }
 
@@ -54,7 +70,7 @@ namespace virtual_autoclicker_console
             }
             catch (Exception exc)
             {
-                ConsoleHelper.WriteError($"Problem parsing or starting command '{command}'", exc);
+                ConsoleHelper.WriteError($"Problem parsing or starting command '{commandStr}'", exc);
             }
         }
 
@@ -91,6 +107,7 @@ namespace virtual_autoclicker_console
         static void Picnic(AutoClickerWorker acWorker)
         {
             acWorker.Picnic();
+            ConsoleHelper.WriteMessage("Autoclicker stopped!");
         }
     }
 }
