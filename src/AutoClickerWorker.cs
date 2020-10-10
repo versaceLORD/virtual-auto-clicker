@@ -4,6 +4,9 @@
     {
         public AutoClicker? AutoClicker { get; set; }
 
+        /// <summary>
+        /// Stops and nulls worker's autoclicker if active
+        /// </summary>
         public void Picnic()
         {
             if (AutoClicker == null)
@@ -12,6 +15,7 @@
             }
 
             AutoClicker.Picnic();
+            AutoClicker = null;
         }
     }
 }

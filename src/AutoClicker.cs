@@ -68,8 +68,7 @@ namespace virtual_autoclicker_console
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"There was no process named {ProcessName}, no autoclicker started.");
+                ConsoleHelper.WriteWarning($"There was no process named {ProcessName}, no autoclicker started.");
             }
         }
 
