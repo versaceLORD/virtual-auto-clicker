@@ -14,7 +14,7 @@ This simple yet efficient console application fulfills your needs for a quick an
 
 ### How to use
 
-* Start the `.exe` file that will be located in the root folder of the downloaded folder. 
+* Start the `virtual-autoclicker-console.exe` file that will be located in the folder. 
 
 * To run any command in the application press your Enter key and a `VAC >>` text will appear. Any text you write after this will be parsed as a command. All additional arguments are space separated.
 
@@ -28,6 +28,8 @@ This simple yet efficient console application fulfills your needs for a quick an
 * To close the autoclicker run: `stop`.
 
 ## Notes
+
+_This repository is very minimalistic and made for a very specific use, the code should not be seen as best practise or what type of code standard I personally advocate._ 
 
 In the source all references to stopping is refered to as `picnic`, if you watch any twitch streams you probably get the reference. :)
 
