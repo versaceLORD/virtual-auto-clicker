@@ -20,9 +20,9 @@ This simply yet efficient console application fills the gap between your needs f
 * To run any command in the application press your Enter key and a `VAC >>` text will appear. Any text you write after this will be parsed as a command. All addiational arguments are space seperated.
 
 * To start the application run: `startautoclicker Firestone X,Y I`
- * X = Coordinate on the X-axis
- * Y = Coordinate on the Y-axis
- * I = Interval in milliseconds
+  * X = Coordinate on the X-axis
+  * Y = Coordinate on the Y-axis
+  * I = Interval in milliseconds
 
 * To close the autoclicker run: `stop`.
 
