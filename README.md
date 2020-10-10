@@ -28,6 +28,8 @@ This simple yet efficient console application fulfills your needs for a quick an
 
 ## Notes
 
+_This repository is very minimalistic and made for a very specific use, the code should not be seen as best practise or what type of code standard I personally advocate._ 
+
 In the source all references to stopping is refered to as `picnic`, if you watch any twitch streams you probably get the reference. :)
 
 ## License
