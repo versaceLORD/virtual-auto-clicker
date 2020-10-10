@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include=".github\workflows\dotnet-core.yml" />
+  </ItemGroup>
+
 </Project>

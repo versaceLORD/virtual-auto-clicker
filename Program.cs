@@ -42,7 +42,7 @@ namespace virtual_autoclicker_console
                 Environment.Exit(0);
             };
 
-            AppDomain.CurrentDomain.ProcessExit += async (sender, e) =>
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
             {
                 VacEnvironment.GetAcWorker()?.Picnic();
             };
