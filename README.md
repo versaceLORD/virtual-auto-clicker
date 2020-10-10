@@ -23,6 +23,7 @@ This simply yet efficient console application fills the gap between your needs f
   * X = Coordinate on the X-axis
   * Y = Coordinate on the Y-axis
   * I = Interval in milliseconds
+  * Example command: `startautoclicker Firestone 450,450 50`
 
 * To close the autoclicker run: `stop`.
 
