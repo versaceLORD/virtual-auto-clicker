@@ -106,8 +106,8 @@ namespace virtual_autoclicker_console
 
             if (CurrentProcess != null)
             {
-                SendMessage(CurrentProcess.MainWindowHandle, WM_LBUTTONDOWN, new IntPtr(MK_LBUTTON), CreateLParam(450, 450));
-                SendMessage(CurrentProcess.MainWindowHandle, WM_LBUTTONUP, new IntPtr(MK_LBUTTON), CreateLParam(450, 450));
+                SendMessage(CurrentProcess.MainWindowHandle, WM_LBUTTONDOWN, new IntPtr(MK_LBUTTON), CreateLParam(Coordinates.X, Coordinates.Y));
+                SendMessage(CurrentProcess.MainWindowHandle, WM_LBUTTONUP, new IntPtr(MK_LBUTTON), CreateLParam(Coordinates.X, Coordinates.Y));
             }
         }
     }
