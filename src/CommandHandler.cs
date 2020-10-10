@@ -24,7 +24,7 @@ namespace virtual_autoclicker_console
                         {
                             if (args != null && args.Length <= 2)
                             {
-                                Console.WriteLine("Command usage: 'startautoclicker X,Y I' please refer to the readme.md file for further assistance.");
+                                Console.WriteLine("Command usage: 'startautoclicker P X,Y I' please refer to the readme.md file for further assistance.");
                                 break;
                             }
 
