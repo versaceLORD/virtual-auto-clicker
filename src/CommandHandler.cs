@@ -24,7 +24,7 @@ namespace virtual_autoclicker_console
                         {
                             if (args != null && args.Length <= 2)
                             {
-                                Console.WriteLine("Please provide at least one argument");
+                                Console.WriteLine("Command usage: 'startautoclicker X,Y I' please refer to the readme.md file for further assistance.");
                                 break;
                             }
 
@@ -70,12 +70,17 @@ namespace virtual_autoclicker_console
 
             try
             {
-                acWorker.AutoClicker = ac;
                 ac.Init();
+                acWorker.AutoClicker = ac;
             }
             catch (Exception exc)
             {
+                acWorker.Picnic();
                 ConsoleHelper.WriteError("Something went wrong when trying to start the autoclicker!", exc);
+            }
+            finally
+            {
+                ConsoleHelper.WriteMessage("Autoclicker started!");
             }
         }
 

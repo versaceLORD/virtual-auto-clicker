@@ -8,6 +8,9 @@
     {
         private static AutoClickerWorker? AutoClickerWorker;
 
+        /// <summary>
+        /// Instantiates the 'AutoClickerWorker'
+        /// </summary>
         public static void Initialize()
         {
             AutoClickerWorker = new AutoClickerWorker();

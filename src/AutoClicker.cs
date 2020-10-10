@@ -13,6 +13,10 @@ namespace virtual_autoclicker_console
         public int Y { get; set; }
     }
 
+    /// <summary>
+    /// This class represents an virtual autoclicker instance. Holds properties and methods required
+    /// to determine how and where to click in given process.
+    /// </summary>
     public class AutoClicker
     {
         private const uint WM_LBUTTONDOWN = 0x201;
@@ -88,6 +92,7 @@ namespace virtual_autoclicker_console
 
         /// <summary>
         /// Creates parameters which will be sent to simulate coordinates to the SendMessage message.
+        /// The coordinate is relative to the upper-left corner of the client area.
         /// </summary>
         public static IntPtr CreateLParam(int LoWord, int HiWord)
         {

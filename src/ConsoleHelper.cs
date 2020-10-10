@@ -2,6 +2,10 @@
 
 namespace virtual_autoclicker_console
 {
+    /// <summary>
+    /// To keep the messages consistent throughout the application, all messages are sent through
+    /// this helping class.
+    /// </summary>
     public static class ConsoleHelper
     {
         public static void WriteMessage(string message)
@@ -33,6 +37,7 @@ namespace virtual_autoclicker_console
         public static void WriteError(Exception e)
         {
             Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Error!");
             Console.WriteLine(e);
             Console.ForegroundColor = ConsoleColor.White;
         }
