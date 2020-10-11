@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace virtual_autoclicker_console
 {
@@ -39,8 +40,20 @@ namespace virtual_autoclicker_console
                         {
                             if (args == null || args.Length <= 2)
                             {
-                                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker P X,Y I' please refer to the readme.md file for further assistance.");
+                                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I' please refer to the readme.md file for further assistance.");
                                 break;
+                            }
+
+                            var processName = args[0];
+                            // If the process name is put between double quotation marks
+                            if (args[0].StartsWith('"') && args[0].EndsWith('"'))
+                            {
+                                var pattern = new Regex("\"(.*?)\"");
+                                var matches = pattern.Matches(processName);
+                                if (matches.Count > 0)
+                                {
+                                    processName = matches[0].Groups[1].Value;
+                                }
                             }
 
                             var coordinates = new Coordinates
@@ -88,15 +101,12 @@ namespace virtual_autoclicker_console
             {
                 ac.Init();
                 acWorker.AutoClicker = ac;
+                ConsoleHelper.WriteMessage("Autoclicker started!");
             }
             catch (Exception exc)
             {
                 acWorker.Picnic();
                 ConsoleHelper.WriteError("Something went wrong when trying to start the autoclicker!", exc);
-            }
-            finally
-            {
-                ConsoleHelper.WriteMessage("Autoclicker started!");
             }
         }
 

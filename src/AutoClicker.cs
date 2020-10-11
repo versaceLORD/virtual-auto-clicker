@@ -55,21 +55,19 @@ namespace virtual_autoclicker_console
             token.ThrowIfCancellationRequested();
 
             CurrentProcess = Process.GetProcessesByName(ProcessName).First();
-            if (CurrentProcess != null && CurrentProcess.MainWindowHandle != null)
+            if (CurrentProcess != null || CurrentProcess?.MainWindowHandle != null)
             {
-                Task.Factory.StartNew(async () =>
+                throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
+            }
+
+            Task.Factory.StartNew(async () =>
+            {
+                while (true)
                 {
-                    while (true)
-                    {
-                        Click();
-                        await Task.Delay(Interval);
-                    }
-                }, token);
-            }
-            else
-            {
-                ConsoleHelper.WriteWarning($"There was no process named {ProcessName}, no autoclicker started.");
-            }
+                    Click();
+                    await Task.Delay(Interval);
+                }
+            }, token);
         }
 
         /// <summary>

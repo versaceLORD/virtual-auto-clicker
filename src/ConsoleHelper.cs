@@ -23,7 +23,7 @@ namespace virtual_autoclicker_console
         public static void WriteError(string message, Exception? e)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"VAC >> {message}", e);
+            Console.WriteLine($"VAC >> {message} \n\r {e}");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
