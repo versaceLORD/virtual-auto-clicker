@@ -24,6 +24,7 @@ This simple yet efficient console application fulfills your needs for a quick an
   * Y = Coordinate on the Y-axis
   * I = Interval in milliseconds
   * Example command: `startautoclicker "Firestone" 450,450 50`
+    * Coordinates are relative to the top left corner of the entered process so for reference, coordinates (0,0) is the top left corner.  
 
 * To close the autoclicker run: `stop`.
 
