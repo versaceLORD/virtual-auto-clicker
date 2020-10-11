@@ -55,7 +55,7 @@ namespace virtual_autoclicker_console
             token.ThrowIfCancellationRequested();
 
             CurrentProcess = Process.GetProcessesByName(ProcessName).First();
-            if (CurrentProcess != null || CurrentProcess?.MainWindowHandle != null)
+            if (CurrentProcess == null || CurrentProcess?.MainWindowHandle == null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
             }

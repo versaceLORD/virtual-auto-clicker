@@ -22,9 +22,12 @@ namespace virtual_autoclicker_console
                     Console.Write("VAC >> ");
                     var Input = Console.ReadLine();
 
-                    if (Input.Length > 0)
+                    if (!string.IsNullOrWhiteSpace(Input) && Input.Length > 0)
                     {
-                        CommandHandler.ParseCommand(Input.Split(' ')[0], Input.Split(' ').Length > 1 ? Input.Split(' ').Skip(1).ToArray() : null);
+                        CommandHandler.ParseCommand(
+                            Input.Split(' ')[0], 
+                            Input.Split(' ').Length > 1 ? Input.Split(' ').Skip(1).ToArray() : null
+                        );
                     }
                 }
             }

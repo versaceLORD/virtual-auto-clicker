@@ -52,7 +52,7 @@ namespace virtual_autoclicker_console
                                 var matches = pattern.Matches(processName);
                                 if (matches.Count > 0)
                                 {
-                                    processName = matches[0].Groups[1].Value;
+                                    processName = matches[0].Groups[1].Value.Replace("\"", "");
                                 }
                             }
 
@@ -62,7 +62,7 @@ namespace virtual_autoclicker_console
                                 Y = int.Parse(args[1].Split(',')[1]),
                             };
 
-                            StartAutoClicker(acWorker, args[0], coordinates, int.Parse(args[2]));
+                            StartAutoClicker(acWorker, processName, coordinates, int.Parse(args[2]));
 
                             break;
                         }
