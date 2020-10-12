@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace virtual_autoclicker_console
+namespace VirtualAutoClicker.Console
 {
     class Program
     {
@@ -10,23 +10,25 @@ namespace virtual_autoclicker_console
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console is starting!");
 
             VacEnvironment.Initialize();
+
             StartClosingHandlers();
-            Console.Title = "Virtual Autoclicker";
+            System.Console.Title = "Virtual Autoclicker";
 
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console has started!\n\r");
 
             while (true)
             {
-                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                if (System.Console.ReadKey(true).Key is ConsoleKey.Enter)
                 {
-                    Console.Write("VAC >> ");
-                    var Input = Console.ReadLine();
+                    System.Console.Write("VAC >> ");
 
-                    if (!string.IsNullOrWhiteSpace(Input) && Input.Length > 0)
+                    var input = System.Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input) && input.Length > 0)
                     {
                         CommandHandler.ParseCommand(
-                            Input.Split(' ')[0], 
-                            Input.Split(' ').Length > 1 ? Input.Split(' ').Skip(1).ToArray() : null
+                            input.Split(' ')[0],
+                            input.Split(' ').Length > 1 ? input.Split(' ').Skip(1).ToArray() : null
                         );
                     }
                 }
@@ -38,7 +40,7 @@ namespace virtual_autoclicker_console
         /// </summary>
         public static void StartClosingHandlers()
         {
-            Console.CancelKeyPress += (sender, e) =>
+            System.Console.CancelKeyPress += (sender, e) =>
             {
                 ConsoleHelper.WriteWarning("Application closing, running clean up!");
                 e.Cancel = true;
