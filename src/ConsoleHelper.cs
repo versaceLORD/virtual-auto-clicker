@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace virtual_autoclicker_console
+namespace VirtualAutoClicker.Console
 {
     /// <summary>
     /// To keep the messages consistent throughout the application, all messages are sent through
@@ -10,36 +10,36 @@ namespace virtual_autoclicker_console
     {
         public static void WriteMessage(string message)
         {
-            Console.WriteLine(message);
+            System.Console.WriteLine(message);
         }
 
         public static void WriteWarning(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"VAC >> {message}");
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = ConsoleColor.Yellow;
+            System.Console.WriteLine($"VAC >> {message}");
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void WriteError(string message, Exception? e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"VAC >> {message} \n\r {e}");
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine($"VAC >> {message} \n\r {e}");
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void WriteError(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine(message);
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void WriteError(Exception e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Error!");
-            Console.WriteLine(e);
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine("Error!");
+            System.Console.WriteLine(e);
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

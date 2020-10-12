@@ -1,4 +1,4 @@
-﻿namespace virtual_autoclicker_console
+﻿namespace VirtualAutoClicker.Console
 {
     /// <summary>
     /// Virtual Autoclicker Environment, holds the initialized Autoclicker and is used as a singleton
@@ -6,19 +6,19 @@
     /// </summary>
     public static class VacEnvironment
     {
-        private static AutoClickerWorker? AutoClickerWorker;
+        private static AutoClickerWorker? _autoClickerWorker;
 
         /// <summary>
         /// Instantiates the 'AutoClickerWorker'
         /// </summary>
         public static void Initialize()
         {
-            AutoClickerWorker = new AutoClickerWorker();
+            _autoClickerWorker = new AutoClickerWorker();
         }
 
         public static AutoClickerWorker? GetAcWorker()
         {
-            return AutoClickerWorker;
+            return _autoClickerWorker;
         }
     }
 }
