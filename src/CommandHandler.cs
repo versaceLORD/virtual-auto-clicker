@@ -24,7 +24,7 @@ namespace VirtualAutoClicker.Console
 
             try
             {
-                Enum.TryParse<Commands>(commandValue, false, out var command);
+                Enum.TryParse<Commands>(commandValue, true, out var command);
 
                 switch (command)
                 {
