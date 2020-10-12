@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using VirtualAutoClicker.Console.Constants;
-using VirtualAutoClicker.Console.Models;
 
-namespace VirtualAutoClicker.Console
+using VirtualAutoClicker.Constants;
+using VirtualAutoClicker.Models;
+
+namespace VirtualAutoClicker
 {
     /// <summary>
     /// This class represents an virtual autoclicker instance. Holds properties and methods required

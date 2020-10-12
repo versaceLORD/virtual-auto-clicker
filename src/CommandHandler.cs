@@ -1,24 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using VirtualAutoClicker.Console.Enums;
-using VirtualAutoClicker.Console.Models;
 
-namespace VirtualAutoClicker.Console
+using VirtualAutoClicker.Enums;
+using VirtualAutoClicker.Models;
+
+namespace VirtualAutoClicker
 {
-    /// <summary>
-    /// Written in lower case since all commands are entered in lowercase.
-    /// </summary>
-    public enum Commands
-    {
-        unknown,
-        startautoclicker,
-        start,
-        stop,
-        stopautoclicker,
-        picnic,
-    }
-
     public static class CommandHandler
     {
         public static void ParseCommand(string commandValue, string[]? args)
@@ -42,7 +30,7 @@ namespace VirtualAutoClicker.Console
                 switch (command)
                 {
                     case Commands.Start:
-                    case Commands.Startautoclicker:
+                    case Commands.StartAutoClicker:
                         {
                             if (args is null || args.Length <= 2)
                             {
@@ -167,7 +155,7 @@ namespace VirtualAutoClicker.Console
 
                 ConsoleHelper.WriteMessage($"Autoclicker '{acName}' started!");
             }
-            catch (Exception exception)
+            catch (Exception exc)
             {
                 // Something went wrong, ensure the autoclicker worker doesn't keep track of this instance anymore.
                 if (acWorker != null && acName != null)

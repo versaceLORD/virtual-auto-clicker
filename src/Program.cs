@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace VirtualAutoClicker.Console
+namespace VirtualAutoClicker
 {
     class Program
     {
@@ -12,17 +12,17 @@ namespace VirtualAutoClicker.Console
             VacEnvironment.Initialize();
 
             StartClosingHandlers();
-            System.Console.Title = "Virtual Autoclicker";
+            Console.Title = "Virtual Autoclicker";
 
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console has started!\n\r");
 
             while (true)
             {
-                if (System.Console.ReadKey(true).Key is ConsoleKey.Enter)
+                if (Console.ReadKey(true).Key is ConsoleKey.Enter)
                 {
-                    System.Console.Write("VAC >> ");
+                    Console.Write("VAC >> ");
 
-                    var input = System.Console.ReadLine();
+                    var input = Console.ReadLine();
 
                     if (!string.IsNullOrWhiteSpace(input) && input.Length > 0)
                     {
@@ -40,7 +40,7 @@ namespace VirtualAutoClicker.Console
         /// </summary>
         public static void StartClosingHandlers()
         {
-            System.Console.CancelKeyPress += (sender, e) =>
+            Console.CancelKeyPress += (sender, e) =>
             {
                 ConsoleHelper.WriteWarning("Application closing, running clean up!");
                 e.Cancel = true;

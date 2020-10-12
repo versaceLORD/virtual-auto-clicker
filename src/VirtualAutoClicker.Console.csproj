@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>VirtualAutoClicker.Console</RootNamespace>
+    <RootNamespace>VirtualAutoClicker</RootNamespace>
     <Nullable>enable</Nullable>
-    <AssemblyName>VirtualAutoClicker.Console</AssemblyName>
+    <AssemblyName>VirtualAutoClicker</AssemblyName>
   </PropertyGroup>
 
 </Project>

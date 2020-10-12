@@ -1,4 +1,4 @@
-﻿namespace VirtualAutoClicker.Console
+﻿namespace VirtualAutoClicker
 {
     /// <summary>
     /// Virtual Autoclicker Environment, holds the initialized Autoclicker and is used as a singleton

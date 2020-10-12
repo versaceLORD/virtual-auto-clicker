@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace virtual_autoclicker_console
+namespace VirtualAutoClicker
 {
     public class AutoClickerWorker
     {
