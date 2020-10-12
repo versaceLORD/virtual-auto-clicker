@@ -1,4 +1,4 @@
-﻿namespace VirtualAutoClicker.Console.Enums
+﻿namespace VirtualAutoClicker.Enums
 {
     /// <summary>
     /// Written in lower case since all commands are entered in lowercase.
@@ -6,10 +6,23 @@
     public enum Commands
     {
         Unknown,
-        Startautoclicker,
+
+        List,
+        ListAutoClickers,
+        ListAll,
+        ShowAll,
+
+        StartAutoClicker,
         Start,
+
         Stop,
         StopAutoClicker,
         Picnic,
+
+        Pause,
+        PauseAutoClicker,
+
+        Resume,
+        ResumeAutoClicker,
     }
 }
