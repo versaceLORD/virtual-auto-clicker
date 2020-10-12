@@ -1,50 +1,47 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using VirtualAutoClicker.Console.Enums;
+using VirtualAutoClicker.Console.Models;
 
-namespace virtual_autoclicker_console
+namespace VirtualAutoClicker.Console
 {
-    /// <summary>
-    /// Written in lower case since all commands are entered in lowercase.
-    /// </summary>
-    public enum Commands
-    {
-        unknown,
-        startautoclicker,
-        start,
-        stop,
-        stopautoclicker,
-        picnic,
-    }
-
     public static class CommandHandler
     {
-        public static void ParseCommand(string commandStr, string[]? args)
+        public static void ParseCommand(string commandValue, string[]? args)
         {
-            if (string.IsNullOrWhiteSpace(commandStr))
+            if (string.IsNullOrWhiteSpace(commandValue))
+            {
                 return;
+            }
 
             var acWorker = VacEnvironment.GetAcWorker();
-            if (acWorker == null)
+            if (acWorker is null)
             {
                 ConsoleHelper.WriteError("AutoClickerWorker was not properly initialized, please restart the application.");
+
                 return;
             }
 
             try
             {
-                Enum.TryParse<Commands>(commandStr, out var command);
+                Enum.TryParse<Commands>(commandValue, out var command);
+
                 switch (command)
                 {
-                    case Commands.start:
-                    case Commands.startautoclicker:
+                    case Commands.Start:
+                    case Commands.Startautoclicker:
                         {
-                            if (args == null || args.Length <= 2)
+                            if (args is null || args.Length <= 2)
                             {
-                                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I' please refer to the readme.md file for further assistance.");
+                                ConsoleHelper.WriteWarning(
+                                    "Command usage: 'startautoclicker \"P\" X,Y I' please " +
+                                    "refer to the readme.md file for further assistance.");
+
                                 break;
                             }
 
                             var processName = args[0];
+
                             // If the process name is put between double quotation marks
                             if (args[0].StartsWith('"') && args[0].EndsWith('"'))
                             {
@@ -66,30 +63,32 @@ namespace virtual_autoclicker_console
 
                             break;
                         }
-                    case Commands.stop:
-                    case Commands.stopautoclicker:
-                    case Commands.picnic:
+                    case Commands.Stop:
+                    case Commands.StopAutoClicker:
+                    case Commands.Picnic:
                         {
                             Picnic(acWorker);
+
                             break;
                         }
-                    case Commands.unknown:
+                    case Commands.Unknown:
+                    //TODO do something regarding unknow commands.
+
                     default:
-                        ConsoleHelper.WriteWarning($"No command found named '{commandStr}'");
+                        ConsoleHelper.WriteWarning($"No command found named '{commandValue}'");
+
                         break;
                 }
-
-
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-                ConsoleHelper.WriteError($"Problem parsing or starting command '{commandStr}'", exc);
+                ConsoleHelper.WriteError($"Problem parsing or starting command '{commandValue}'", exception);
             }
         }
 
-        static void StartAutoClicker(AutoClickerWorker acWorker, string processName, Coordinates coordinates, int interval)
+        private static void StartAutoClicker(AutoClickerWorker clickerWorker, string processName, Coordinates coordinates, int interval)
         {
-            var ac = new AutoClicker
+            var autoClicker = new AutoClicker
             {
                 Active = true,
                 Coordinates = coordinates,
@@ -99,24 +98,28 @@ namespace virtual_autoclicker_console
 
             try
             {
-                ac.Init();
-                acWorker.AutoClicker = ac;
+                autoClicker.Init();
+
+                clickerWorker.AutoClicker = autoClicker;
+
                 ConsoleHelper.WriteMessage("Autoclicker started!");
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-                acWorker.Picnic();
-                ConsoleHelper.WriteError("Something went wrong when trying to start the autoclicker!", exc);
+                clickerWorker.Picnic();
+
+                ConsoleHelper.WriteError("Something went wrong when trying to start the autoclicker!", exception);
             }
         }
 
         /// <summary>
         /// Closes the started autoclicker
         /// </summary>
-        /// <param name="acWorker"></param>
-        static void Picnic(AutoClickerWorker acWorker)
+        /// <param name="clickerWorker"></param>
+        private static void Picnic(AutoClickerWorker clickerWorker)
         {
-            acWorker.Picnic();
+            clickerWorker.Picnic();
+
             ConsoleHelper.WriteMessage("Autoclicker stopped!");
         }
     }

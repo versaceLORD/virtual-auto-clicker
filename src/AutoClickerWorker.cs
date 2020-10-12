@@ -1,4 +1,4 @@
-﻿namespace virtual_autoclicker_console
+﻿namespace VirtualAutoClicker.Console
 {
     public class AutoClickerWorker
     {
@@ -9,12 +9,13 @@
         /// </summary>
         public void Picnic()
         {
-            if (AutoClicker == null)
+            if (AutoClicker is null)
             {
                 return;
             }
 
             AutoClicker.Picnic();
+
             AutoClicker = null;
         }
     }

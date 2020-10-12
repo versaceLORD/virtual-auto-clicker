@@ -4,30 +4,19 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtualAutoClicker.Console.Constants;
+using VirtualAutoClicker.Console.Models;
 
-namespace virtual_autoclicker_console
+namespace VirtualAutoClicker.Console
 {
-    public class Coordinates
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-    }
-
     /// <summary>
     /// This class represents an virtual autoclicker instance. Holds properties and methods required
     /// to determine how and where to click in given process.
     /// </summary>
     public class AutoClicker
     {
-        private const uint WM_LBUTTONDOWN = 0x201;
-        private const uint WM_LBUTTONUP = 0x202;
-        private const uint MK_LBUTTON = 0x0001;
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
 
         public string? ProcessName { get; set; }
 
@@ -43,7 +32,7 @@ namespace virtual_autoclicker_console
         /// </summary>
         public int Interval { get; set; }
 
-        CancellationTokenSource? CancellationTokenSource { get; set; }
+        private CancellationTokenSource? CancellationTokenSource { get; set; }
 
         private Process? CurrentProcess { get; set; }
 
@@ -55,7 +44,7 @@ namespace virtual_autoclicker_console
             token.ThrowIfCancellationRequested();
 
             CurrentProcess = Process.GetProcessesByName(ProcessName).First();
-            if (CurrentProcess == null || CurrentProcess?.MainWindowHandle == null)
+            if (CurrentProcess?.MainWindowHandle is null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
             }
@@ -65,8 +54,10 @@ namespace virtual_autoclicker_console
                 while (true)
                 {
                     Click();
-                    await Task.Delay(Interval);
+
+                    await Task.Delay(Interval, token);
                 }
+
             }, token);
         }
 
@@ -76,8 +67,10 @@ namespace virtual_autoclicker_console
         public void Picnic()
         {
             // No task was ever started
-            if (CancellationTokenSource == null)
+            if (CancellationTokenSource is null)
+            {
                 return;
+            }
 
             Active = false;
             Coordinates = null;
@@ -91,9 +84,9 @@ namespace virtual_autoclicker_console
         /// Creates parameters which will be sent to simulate coordinates to the SendMessage message.
         /// The coordinate is relative to the upper-left corner of the client area.
         /// </summary>
-        public static IntPtr CreateLParam(int LoWord, int HiWord)
+        public static IntPtr CreateLParam(int loWord, int hiWord)
         {
-            return (IntPtr)((HiWord << 16) | (LoWord & 0xffff));
+            return (IntPtr)((hiWord << 16) | (loWord & 0xffff));
         }
 
         /// <summary>
@@ -106,10 +99,20 @@ namespace virtual_autoclicker_console
                 return;
             }
 
-            if (CurrentProcess != null)
+            if (CurrentProcess is { })
             {
-                SendMessage(CurrentProcess.MainWindowHandle, WM_LBUTTONDOWN, new IntPtr(MK_LBUTTON), CreateLParam(Coordinates.X, Coordinates.Y));
-                SendMessage(CurrentProcess.MainWindowHandle, WM_LBUTTONUP, new IntPtr(MK_LBUTTON), CreateLParam(Coordinates.X, Coordinates.Y));
+                SendMessage(
+                    CurrentProcess.MainWindowHandle,
+                    Buttons.WmLbuttondown,
+                    new IntPtr(Buttons.MkLbutton),
+                    CreateLParam(Coordinates.X,
+                        Coordinates.Y));
+
+                SendMessage(
+                    CurrentProcess.MainWindowHandle,
+                    Buttons.WmLbuttonup,
+                    new IntPtr(Buttons.MkLbutton),
+                    CreateLParam(Coordinates.X, Coordinates.Y));
             }
         }
     }
