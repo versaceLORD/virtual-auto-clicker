@@ -19,7 +19,7 @@ namespace VirtualAutoClicker
         /// </summary>
         public void Picnic()
         {
-            if (AutoClickers == null)
+            if (AutoClickers is null)
             {
                 return;
             }
@@ -52,7 +52,7 @@ namespace VirtualAutoClicker
         /// <returns></returns>
         public string GetAutoClickerStatusString()
         {
-            if (AutoClickers != null && AutoClickers.Count > 0)
+            if (AutoClickers is { } && AutoClickers.Count > 0)
             {
                 var result = new StringBuilder();
                 result.Append("List of all started autoclickers:\n\r");

@@ -90,7 +90,7 @@ namespace VirtualAutoClicker
                     case Commands.Pause:
                     case Commands.PauseAutoClicker:
                         {
-                            if (args != null && args.Length >= 1)
+                            if (args is { } && args.Length >= 1)
                             {
                                 Pause(args[0]);
                             }
@@ -105,7 +105,7 @@ namespace VirtualAutoClicker
                     case Commands.Resume:
                     case Commands.ResumeAutoClicker:
                         {
-                            if (args != null && args.Length >= 1)
+                            if (args is { } && args.Length >= 1)
                             {
                                 Resume(args[0]);
                             }
@@ -158,7 +158,7 @@ namespace VirtualAutoClicker
             catch (Exception exc)
             {
                 // Something went wrong, ensure the autoclicker worker doesn't keep track of this instance anymore.
-                if (acWorker != null && acName != null)
+                if (acWorker is { } && acName is { })
                 {
                     acWorker?.RemoveAc(acName);
                 }
@@ -195,7 +195,7 @@ namespace VirtualAutoClicker
             try
             {
                 var ac = acWorker?.AutoClickers.First(a => a.Value.Name == acName).Value;
-                if (ac == null)
+                if (ac is null)
                 {
                     throw new Exception();
                 }
@@ -215,7 +215,7 @@ namespace VirtualAutoClicker
             try
             {
                 var ac = acWorker?.AutoClickers.First(a => a.Value.Name == acName).Value;
-                if (ac == null)
+                if (ac is null)
                 {
                     throw new Exception();
                 }
