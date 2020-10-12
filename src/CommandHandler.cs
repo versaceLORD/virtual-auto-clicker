@@ -9,25 +9,25 @@ namespace virtual_autoclicker_console
     /// </summary>
     public enum Commands
     {
-        unknown,
+        Unknown,
 
-        list,
-        listautoclickers,
-        listall,
-        showall,
+        List,
+        ListAutoClickers,
+        ListAll,
+        ShowAll,
 
-        startautoclicker,
-        start,
+        StartAutoClicker,
+        Start,
 
-        stop,
-        stopautoclicker,
-        picnic,
+        Stop,
+        StopAutoClicker,
+        Picnic,
 
-        pause,
-        pauseautoclicker,
+        Pause,
+        PauseAutoClicker,
 
-        resume,
-        resumeautoclicker,
+        Resume,
+        ResumeAutoClicker,
     }
 
     public static class CommandHandler
@@ -46,11 +46,11 @@ namespace virtual_autoclicker_console
 
             try
             {
-                Enum.TryParse<Commands>(commandStr, out var command);
+                Enum.TryParse<Commands>(commandStr, false, out var command);
                 switch (command)
                 {
-                    case Commands.start:
-                    case Commands.startautoclicker:
+                    case Commands.Start:
+                    case Commands.StartAutoClicker:
                         {
                             if (args == null || args.Length < 3)
                             {
@@ -92,22 +92,22 @@ namespace virtual_autoclicker_console
 
                             break;
                         }
-                    case Commands.list:
-                    case Commands.listall:
-                    case Commands.listautoclickers:
+                    case Commands.List:
+                    case Commands.ListAll:
+                    case Commands.ListAutoClickers:
                         {
                             ListClickers();
                             break;
                         }
-                    case Commands.stop:
-                    case Commands.stopautoclicker:
-                    case Commands.picnic:
+                    case Commands.Stop:
+                    case Commands.StopAutoClicker:
+                    case Commands.Picnic:
                         {
                             Picnic();
                             break;
                         }
-                    case Commands.pause:
-                    case Commands.pauseautoclicker:
+                    case Commands.Pause:
+                    case Commands.PauseAutoClicker:
                         {
                             if (args != null && args.Length >= 1)
                             {
@@ -121,8 +121,8 @@ namespace virtual_autoclicker_console
 
                             break;
                         }
-                    case Commands.resume:
-                    case Commands.resumeautoclicker:
+                    case Commands.Resume:
+                    case Commands.ResumeAutoClicker:
                         {
                             if (args != null && args.Length >= 1)
                             {
@@ -136,7 +136,7 @@ namespace virtual_autoclicker_console
 
                             break;
                         }
-                    case Commands.unknown:
+                    case Commands.Unknown:
                     default:
                         ConsoleHelper.WriteWarning($"No command found named '{commandStr}'");
                         break;
