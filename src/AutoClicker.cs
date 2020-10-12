@@ -18,19 +18,19 @@ namespace VirtualAutoClicker.Console
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
 
-        public string? ProcessName { get; set; }
-
         /// <summary>
         /// If true, the instance will click in the set process and on the set coordinates
         /// </summary>
         public bool Active { get; set; }
 
-        public Coordinates? Coordinates { get; set; }
-
         /// <summary>
         /// Entered in milliseconds
         /// </summary>
         public int Interval { get; set; }
+
+        public Coordinates? Coordinates { get; set; }
+
+        public string? ProcessName { get; set; }
 
         private CancellationTokenSource? CancellationTokenSource { get; set; }
 
@@ -84,9 +84,9 @@ namespace VirtualAutoClicker.Console
         /// Creates parameters which will be sent to simulate coordinates to the SendMessage message.
         /// The coordinate is relative to the upper-left corner of the client area.
         /// </summary>
-        public static IntPtr CreateLParam(int loWord, int hiWord)
+        public static IntPtr CreateLParam(int lowercaseWord, int hiWord)
         {
-            return (IntPtr)((hiWord << 16) | (loWord & 0xffff));
+            return (IntPtr)((hiWord << 16) | (lowercaseWord & 0xffff));
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace VirtualAutoClicker.Console
         /// </summary>
         public void Click()
         {
-            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X == null || Coordinates?.Y == null)
+            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X is null || Coordinates?.Y is null)
             {
                 return;
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using VirtualAutoClicker.Console.Enums;
 using VirtualAutoClicker.Console.Models;
@@ -14,8 +15,8 @@ namespace VirtualAutoClicker.Console
                 return;
             }
 
-            var acWorker = VacEnvironment.GetAcWorker();
-            if (acWorker is null)
+            var autoClicker = VacEnvironment.GetAcWorker();
+            if (autoClicker is null)
             {
                 ConsoleHelper.WriteError("AutoClickerWorker was not properly initialized, please restart the application.");
 
@@ -40,16 +41,16 @@ namespace VirtualAutoClicker.Console
                                 break;
                             }
 
-                            var processName = args[0];
+                            var processName = args.First();
 
                             // If the process name is put between double quotation marks
-                            if (args[0].StartsWith('"') && args[0].EndsWith('"'))
+                            if (args.First().StartsWith('"') && args.First().EndsWith('"'))
                             {
                                 var pattern = new Regex("\"(.*?)\"");
                                 var matches = pattern.Matches(processName);
-                                if (matches.Count > 0)
+                                if (matches.Any())
                                 {
-                                    processName = matches[0].Groups[1].Value.Replace("\"", "");
+                                    processName = matches.First().Groups[1].Value.Replace("\"", string.Empty);
                                 }
                             }
 
@@ -59,7 +60,7 @@ namespace VirtualAutoClicker.Console
                                 Y = int.Parse(args[1].Split(',')[1]),
                             };
 
-                            StartAutoClicker(acWorker, processName, coordinates, int.Parse(args[2]));
+                            StartAutoClicker(autoClicker, processName, coordinates, int.Parse(args[2]));
 
                             break;
                         }
@@ -67,7 +68,7 @@ namespace VirtualAutoClicker.Console
                     case Commands.StopAutoClicker:
                     case Commands.Picnic:
                         {
-                            Picnic(acWorker);
+                            Picnic(autoClicker);
 
                             break;
                         }

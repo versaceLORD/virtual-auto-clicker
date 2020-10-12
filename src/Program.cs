@@ -12,6 +12,7 @@ namespace VirtualAutoClicker.Console
             VacEnvironment.Initialize();
 
             StartClosingHandlers();
+
             System.Console.Title = "Virtual Autoclicker";
 
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console has started!");
