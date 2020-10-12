@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace virtual_autoclicker_console
@@ -9,11 +10,24 @@ namespace virtual_autoclicker_console
     public enum Commands
     {
         unknown,
+
+        list,
+        listautoclickers,
+        listall,
+        showall,
+
         startautoclicker,
         start,
+
         stop,
         stopautoclicker,
         picnic,
+
+        pause,
+        pauseautoclicker,
+
+        resume,
+        resumeautoclicker,
     }
 
     public static class CommandHandler
@@ -38,10 +52,16 @@ namespace virtual_autoclicker_console
                     case Commands.start:
                     case Commands.startautoclicker:
                         {
-                            if (args == null || args.Length <= 2)
+                            if (args == null || args.Length < 3)
                             {
-                                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I' please refer to the readme.md file for further assistance.");
+                                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I N' please refer to the readme.md file for further assistance.");
                                 break;
+                            }
+
+                            var proposedAcName = string.Empty;
+                            if (args.Length >= 4)
+                            {
+                                proposedAcName = args[3];
                             }
 
                             var processName = args[0];
@@ -62,15 +82,58 @@ namespace virtual_autoclicker_console
                                 Y = int.Parse(args[1].Split(',')[1]),
                             };
 
-                            StartAutoClicker(acWorker, processName, coordinates, int.Parse(args[2]));
+                            // Instantiate the new autoclicker
+                            StartAutoClicker(
+                                proposedAcName,
+                                processName,
+                                coordinates,
+                                int.Parse(args[2])
+                            );
 
+                            break;
+                        }
+                    case Commands.list:
+                    case Commands.listall:
+                    case Commands.listautoclickers:
+                        {
+                            ListClickers();
                             break;
                         }
                     case Commands.stop:
                     case Commands.stopautoclicker:
                     case Commands.picnic:
                         {
-                            Picnic(acWorker);
+                            Picnic();
+                            break;
+                        }
+                    case Commands.pause:
+                    case Commands.pauseautoclicker:
+                        {
+                            if (args != null && args.Length >= 1)
+                            {
+                                Pause(args[0]);
+                            }
+                            else
+                            {
+                                ConsoleHelper.WriteWarning("Command usage: 'pause N' please refer to the readme.md file for further assistance.");
+                                break;
+                            }
+
+                            break;
+                        }
+                    case Commands.resume:
+                    case Commands.resumeautoclicker:
+                        {
+                            if (args != null && args.Length >= 1)
+                            {
+                                Resume(args[0]);
+                            }
+                            else
+                            {
+                                ConsoleHelper.WriteWarning("Command usage: 'resume N' please refer to the readme.md file for further assistance.");
+                                break;
+                            }
+
                             break;
                         }
                     case Commands.unknown:
@@ -87,10 +150,18 @@ namespace virtual_autoclicker_console
             }
         }
 
-        static void StartAutoClicker(AutoClickerWorker acWorker, string processName, Coordinates coordinates, int interval)
+        static void StartAutoClicker(string proposedAcName, string processName, Coordinates coordinates, int interval)
         {
+            var acWorker = VacEnvironment.GetAcWorker();
+            var acName = proposedAcName;
+            if (string.IsNullOrWhiteSpace(acName))
+            {
+                acName = Guid.NewGuid().ToString();
+            }
+
             var ac = new AutoClicker
             {
+                Name = acName,
                 Active = true,
                 Coordinates = coordinates,
                 Interval = interval,
@@ -99,25 +170,83 @@ namespace virtual_autoclicker_console
 
             try
             {
+                acWorker?.AutoClickers?.Add(acName, ac);
                 ac.Init();
-                acWorker.AutoClicker = ac;
-                ConsoleHelper.WriteMessage("Autoclicker started!");
+
+                ConsoleHelper.WriteMessage($"Autoclicker '{acName}' started!");
             }
             catch (Exception exc)
             {
-                acWorker.Picnic();
+                // Something went wrong, ensure the autoclicker worker doesn't keep track of this instance anymore.
+                if (acWorker != null && acName != null)
+                {
+                    acWorker?.RemoveAc(acName);
+                }
+
                 ConsoleHelper.WriteError("Something went wrong when trying to start the autoclicker!", exc);
             }
         }
 
-        /// <summary>
-        /// Closes the started autoclicker
-        /// </summary>
-        /// <param name="acWorker"></param>
-        static void Picnic(AutoClickerWorker acWorker)
+        static void ListClickers()
         {
-            acWorker.Picnic();
-            ConsoleHelper.WriteMessage("Autoclicker stopped!");
+            var acWorker = VacEnvironment.GetAcWorker();
+            var formattedString = acWorker?.GetAutoClickerStatusString();
+
+            if (!string.IsNullOrWhiteSpace(formattedString))
+            {
+                ConsoleHelper.WriteMessage(formattedString);
+            }
+        }
+
+        /// <summary>
+        /// Closes all started autoclickers
+        /// </summary>
+        static void Picnic()
+        {
+            var acWorker = VacEnvironment.GetAcWorker();
+            acWorker?.Picnic();
+
+            ConsoleHelper.WriteMessage("Autoclickers stopped!");
+        }
+
+        static void Pause(string acName)
+        {
+            var acWorker = VacEnvironment.GetAcWorker();
+            try
+            {
+                var ac = acWorker?.AutoClickers.First(a => a.Value.Name == acName).Value;
+                if (ac == null)
+                {
+                    throw new Exception();
+                }
+
+                ac.Pause();
+            }
+            catch (Exception)
+            {
+                ConsoleHelper.WriteWarning($"Couldn't find any autoclicker '{acName}', please check for any spelling errors, or use command 'list' to see all running autoclickers.");
+                return;
+            }
+        }
+
+        static void Resume(string acName)
+        {
+            var acWorker = VacEnvironment.GetAcWorker();
+            try
+            {
+                var ac = acWorker?.AutoClickers.First(a => a.Value.Name == acName).Value;
+                if (ac == null)
+                {
+                    throw new Exception();
+                }
+
+                ac.Resume();
+            }
+            catch (Exception)
+            {
+                ConsoleHelper.WriteWarning($"Couldn't find any autoclicker '{acName}', please check for any spelling errors, or use command 'list' to see all running autoclickers.");
+                return;
+            }
         }
     }
 }

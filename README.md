@@ -18,15 +18,31 @@ This simple yet efficient console application fulfills your needs for a quick an
 
 * To run any command in the application press your Enter key and a `VAC >>` text will appear. Any text you write after this will be parsed as a command. All additional arguments are space separated.
 
-* To start the application run: `startautoclicker "P" X,Y I`
+* To start the application run: `startautoclicker "P" X,Y I N`
   * P = Name of process to start autoclicker in
   * X = Coordinate on the X-axis
   * Y = Coordinate on the Y-axis
   * I = Interval in milliseconds
+  * N = Name of the autoclicker instance. This is an optional parameter, and the autoclicker works just fine without a custom name.
+  Giving it a custom name is useful if you plan to use multiple autoclickers simultaneously
   * Example command: `startautoclicker "Firestone" 450,450 50`
     * Coordinates are relative to the top left corner of the entered process so for reference, coordinates (0,0) is the top left corner.  
 
-* To close the autoclicker run: `stop`.
+* To close the autoclicker, run: `stop`.
+
+## Full list of commands
+
+Please refer to the descriptions of the abbreviations in the how to use part of this document as they will be used here as well.
+
+* To start the application run: `startautoclicker "P" X,Y I N`
+
+* To temporarily stop the autoclicker, run `pause N`
+
+* To temporarily resume a paused autoclicker, run `resume N`
+
+* To list all started autoclickers, run `list`
+
+* To stop all started autoclickers run `stop` or `picnic`
 
 ## Notes
 

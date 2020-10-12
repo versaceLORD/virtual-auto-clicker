@@ -10,7 +10,9 @@ namespace virtual_autoclicker_console
     {
         public static void WriteMessage(string message)
         {
+            Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void WriteWarning(string message)

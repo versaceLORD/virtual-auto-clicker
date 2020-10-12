@@ -29,6 +29,11 @@ namespace virtual_autoclicker_console
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
+        /// <summary>
+        /// Name of instance
+        /// </summary>
+        public string? Name { get; set; }
+
         public string? ProcessName { get; set; }
 
         /// <summary>
@@ -51,14 +56,28 @@ namespace virtual_autoclicker_console
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            var token = CancellationTokenSource.Token;
-            token.ThrowIfCancellationRequested();
-
             CurrentProcess = Process.GetProcessesByName(ProcessName).First();
             if (CurrentProcess == null || CurrentProcess?.MainWindowHandle == null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
             }
+
+            StartClicker();
+        }
+
+        /// <summary>
+        /// Starts clicker task
+        /// </summary>
+        private void StartClicker()
+        {
+            if (CancellationTokenSource == null)
+            {
+                ConsoleHelper.WriteError("Tried to start a autoclicker's clicking task without a token source");
+                return;
+            }
+
+            var token = CancellationTokenSource.Token;
+            token.ThrowIfCancellationRequested();
 
             Task.Factory.StartNew(async () =>
             {
@@ -71,7 +90,7 @@ namespace virtual_autoclicker_console
         }
 
         /// <summary>
-        /// Call this is something goes very wrong
+        /// Call this is something goes very wrong, or if it's time to end this instance's life (RIP)
         /// </summary>
         public void Picnic()
         {
@@ -85,6 +104,31 @@ namespace virtual_autoclicker_console
             Interval = int.MaxValue;
 
             CancellationTokenSource.Cancel();
+        }
+
+        /// <summary>
+        /// Sets active to false and stops the current running task (if running)
+        /// </summary>
+        public void Pause()
+        {
+            Active = false;
+            CancellationTokenSource?.Cancel();
+        }
+
+        /// <summary>
+        /// Renews 'CancellationTokenSource' and starts clicker task
+        /// </summary>
+        public void Resume()
+        {
+            if (Active)
+            {
+                ConsoleHelper.WriteMessage($"Autoclicker '{Name}' is already running!");
+                return;
+            }
+            Active = true;
+            CancellationTokenSource = new CancellationTokenSource();
+
+            StartClicker();
         }
 
         /// <summary>
