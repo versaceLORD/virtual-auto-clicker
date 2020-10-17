@@ -119,9 +119,10 @@ namespace VirtualAutoClicker
                         }
                     case Commands.Unknown:
                     default:
-                        ConsoleHelper.WriteWarning($"No command found named '{commandValue}'");
-
-                        break;
+                        {
+                            ConsoleHelper.WriteWarning($"No command found named '{commandValue}'");
+                            break;
+                        }
                 }
             }
             catch (Exception exception)
@@ -189,44 +190,20 @@ namespace VirtualAutoClicker
             ConsoleHelper.WriteMessage("Autoclickers stopped!");
         }
 
-        static void Pause(string acName)
+        private static void Pause(string acName) => GetAutoclicker(acName)?.Pause();
+
+        private static void Resume(string acName) => GetAutoclicker(acName)?.Resume();
+
+        private static AutoClicker? GetAutoclicker(string acName)
         {
             var acWorker = VacEnvironment.GetAcWorker();
-            try
+            var ac = acWorker?.AutoClickers.FirstOrDefault(a => a.Value.Name == acName).Value;
+            if (ac is null)
             {
-                var ac = acWorker?.AutoClickers.First(a => a.Value.Name == acName).Value;
-                if (ac is null)
-                {
-                    throw new Exception();
-                }
+                ConsoleHelper.WriteWarning($"Couldn't find an autoclicker named '{acName}'. Use command 'list' to see all running autoclickers.");
+            }
 
-                ac.Pause();
-            }
-            catch (Exception)
-            {
-                ConsoleHelper.WriteWarning($"Couldn't find any autoclicker '{acName}', please check for any spelling errors, or use command 'list' to see all running autoclickers.");
-                return;
-            }
-        }
-
-        static void Resume(string acName)
-        {
-            var acWorker = VacEnvironment.GetAcWorker();
-            try
-            {
-                var ac = acWorker?.AutoClickers.First(a => a.Value.Name == acName).Value;
-                if (ac is null)
-                {
-                    throw new Exception();
-                }
-
-                ac.Resume();
-            }
-            catch (Exception)
-            {
-                ConsoleHelper.WriteWarning($"Couldn't find any autoclicker '{acName}', please check for any spelling errors, or use command 'list' to see all running autoclickers.");
-                return;
-            }
+            return ac;
         }
     }
 }

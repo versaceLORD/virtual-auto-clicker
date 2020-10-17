@@ -54,21 +54,11 @@ namespace VirtualAutoClicker
         {
             if (AutoClickers is { } && AutoClickers.Count > 0)
             {
-                var result = new StringBuilder();
-                result.Append("List of all started autoclickers:\n\r");
-
-                var acLastInList = AutoClickers.ElementAt(AutoClickers.Count - 1).Key;
-
-                foreach (var ac in AutoClickers)
-                {
-                    result.Append($"  * {ac.Key} - {(ac.Value.Active ? "Running" : "Paused")}");
-                    if (ac.Key != acLastInList)
-                    {
-                        result.Append("\r\n");
-                    }
-                }
-
-                return result.ToString();
+                return string.Join(
+                    "\n",
+                    AutoClickers.Select(x => $"  * {x.Key} - {(x.Value.Active ? "Running" : "Paused")}")
+                    .Prepend("List of all started autoclickers:")
+                );
             }
 
             return "No running autoclickers!";

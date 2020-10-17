@@ -69,7 +69,7 @@ namespace VirtualAutoClicker
             var token = CancellationTokenSource.Token;
             token.ThrowIfCancellationRequested();
 
-            Task.Factory.StartNew(async () =>
+            Task.Factory.StartNew(async (_) =>
             {
                 while (true)
                 {
@@ -78,7 +78,7 @@ namespace VirtualAutoClicker
                     await Task.Delay(Interval, token);
                 }
 
-            }, token);
+            }, null, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         /// <summary>
@@ -92,12 +92,12 @@ namespace VirtualAutoClicker
                 return;
             }
 
+            CancellationTokenSource.Cancel();
+
             Active = false;
+            Interval = int.MaxValue;
             Coordinates = null;
             ProcessName = null;
-            Interval = int.MaxValue;
-
-            CancellationTokenSource.Cancel();
         }
 
         /// <summary>

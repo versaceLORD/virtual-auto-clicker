@@ -48,10 +48,7 @@ namespace VirtualAutoClicker
                 Environment.Exit(0);
             };
 
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
-            {
-                VacEnvironment.GetAcWorker()?.Picnic();
-            };
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => VacEnvironment.GetAcWorker()?.Picnic();
         }
     }
 }
