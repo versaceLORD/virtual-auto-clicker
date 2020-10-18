@@ -5,7 +5,7 @@ namespace VirtualAutoClicker
 {
     class Program
     {
-        static void Main()
+        public static void Main()
         {
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console is starting!");
 
@@ -43,7 +43,9 @@ namespace VirtualAutoClicker
             Console.CancelKeyPress += (sender, e) =>
             {
                 ConsoleHelper.WriteWarning("Application closing, running clean up!");
+
                 e.Cancel = true;
+
                 VacEnvironment.GetAcWorker()?.Picnic();
                 Environment.Exit(0);
             };

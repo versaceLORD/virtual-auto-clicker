@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace VirtualAutoClicker
 {
@@ -19,15 +18,10 @@ namespace VirtualAutoClicker
         /// </summary>
         public void Picnic()
         {
-            if (AutoClickers is null)
+            foreach (var autoClicker in AutoClickers)
             {
-                return;
-            }
-
-            foreach (var ac in AutoClickers)
-            {
-                ac.Value.Picnic();
-                AutoClickers.Remove(ac.Key);
+                autoClicker.Value.Picnic();
+                AutoClickers.Remove(autoClicker.Key);
             }
         }
 
@@ -38,8 +32,8 @@ namespace VirtualAutoClicker
         {
             try
             {
-                AutoClickers?.Remove(key);
-            } 
+                AutoClickers.Remove(key);
+            }
             catch (Exception exc)
             {
                 ConsoleHelper.WriteError($"Failed to remove Autoclicker '{key}'", exc);
@@ -52,7 +46,7 @@ namespace VirtualAutoClicker
         /// <returns></returns>
         public string GetAutoClickerStatusString()
         {
-            if (AutoClickers is { } && AutoClickers.Count > 0)
+            if (AutoClickers.Count > 0)
             {
                 return string.Join(
                     "\n",
