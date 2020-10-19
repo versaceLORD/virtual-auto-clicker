@@ -46,7 +46,7 @@ namespace VirtualAutoClicker
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            CurrentProcess = Process.GetProcessesByName(ProcessName).First();
+            CurrentProcess = Process.GetProcessesByName(ProcessName).FirstOrDefault();
             if (CurrentProcess?.MainWindowHandle == null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");

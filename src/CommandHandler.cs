@@ -40,7 +40,7 @@ namespace VirtualAutoClicker
                             var processName = args[0];
 
                             // If the process name is put between double quotation marks
-                            if (args.First().StartsWith('"') && args.First().EndsWith('"'))
+                            if (args[0][0] == '"' && args[0][^1] =='"')
                             {
                                 var pattern = new Regex("\"(.*?)\"");
                                 var matches = pattern.Matches(processName);
