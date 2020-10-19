@@ -47,7 +47,7 @@ namespace VirtualAutoClicker
             CancellationTokenSource = new CancellationTokenSource();
 
             CurrentProcess = Process.GetProcessesByName(ProcessName).FirstOrDefault();
-            if (CurrentProcess?.MainWindowHandle == null)
+            if (CurrentProcess?.MainWindowHandle is null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
             }
@@ -60,7 +60,7 @@ namespace VirtualAutoClicker
         /// </summary>
         private void StartClicker()
         {
-            if (CancellationTokenSource == null)
+            if (CancellationTokenSource is null)
             {
                 ConsoleHelper.WriteError("Tried to start a autoclicker's clicking task without a token source");
                 return;
@@ -87,7 +87,7 @@ namespace VirtualAutoClicker
         public void Picnic()
         {
             // No task was ever started
-            if (CancellationTokenSource == null)
+            if (CancellationTokenSource is null)
             {
                 return;
             }
@@ -139,12 +139,12 @@ namespace VirtualAutoClicker
         /// </summary>
         public void Click()
         {
-            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X == null || Coordinates?.Y == null)
+            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X is null || Coordinates?.Y is null)
             {
                 return;
             }
 
-            if (CurrentProcess != null)
+            if (CurrentProcess is { })
             {
                 SendMessage(
                     CurrentProcess.MainWindowHandle,
