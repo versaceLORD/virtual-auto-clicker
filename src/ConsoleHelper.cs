@@ -8,40 +8,18 @@ namespace VirtualAutoClicker
     /// </summary>
     public static class ConsoleHelper
     {
-        public static void WriteMessage(string message)
+        private static void WriteColored(string message, ConsoleColor color)
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            var lastColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
             Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = lastColor;
         }
 
-        public static void WriteWarning(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"VAC >> {message}");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public static void WriteError(string message, Exception? e)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"VAC >> {message} \n\r {e}");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public static void WriteError(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public static void WriteError(Exception e)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Error!");
-            Console.WriteLine(e);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
+        public static void WriteMessage(string message) => WriteColored(message, ConsoleColor.Gray);
+        public static void WriteWarning(string message) => WriteColored($"VAC >> {message}", ConsoleColor.Yellow);
+        public static void WriteError(string message, Exception? e) => WriteColored($"VAC >> {message} \r\n {e}", ConsoleColor.Red);
+        public static void WriteError(string message) => WriteColored(message, ConsoleColor.Red);
+        public static void WriteError(Exception e) => WriteColored($"Error!\r\n{e}", ConsoleColor.Red);
     }
 }

@@ -7,6 +7,7 @@ namespace VirtualAutoClicker
     {
         public static void Main()
         {
+            Console.ForegroundColor = ConsoleColor.White;
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console is starting!");
 
             VacEnvironment.Initialize();
