@@ -26,10 +26,7 @@ namespace VirtualAutoClicker
 
                     if (!string.IsNullOrWhiteSpace(input) && input.Length > 0)
                     {
-                        CommandHandler.ParseCommand(
-                            input.Split(' ')[0],
-                            input.Split(' ')[1..]
-                        );
+                        CommandHandler.ParseCommand(input.Split(' ')[0], input.Split(' ')[1..]);
                     }
                 }
             }
@@ -46,11 +43,11 @@ namespace VirtualAutoClicker
 
                 e.Cancel = true;
 
-                ACWorker?.Picnic();
+                ACWorker.Picnic();
                 Environment.Exit(0);
             };
 
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => ACWorker?.Picnic();
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => ACWorker.Picnic();
         }
     }
 }
