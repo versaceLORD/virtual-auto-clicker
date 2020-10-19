@@ -8,7 +8,7 @@ namespace VirtualAutoClicker
 {
     public static class CommandHandler
     {
-        public static void ParseCommand(string commandValue, string[]? args)
+        public static void ParseCommand(string commandValue, string[] args)
         {
             if (string.IsNullOrWhiteSpace(commandValue))
             {
@@ -31,7 +31,7 @@ namespace VirtualAutoClicker
                     case Commands.Start:
                     case Commands.StartAutoClicker:
                         {
-                            if (args is null || args.Length <= 2)
+                            if (args.Length <= 2)
                             {
                                 ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I N' please" +
                                                            " refer to the readme.md file for further assistance.");
@@ -90,7 +90,7 @@ namespace VirtualAutoClicker
                     case Commands.Pause:
                     case Commands.PauseAutoClicker:
                         {
-                            if (args is { } && args.Length >= 1)
+                            if (args.Length >= 1)
                             {
                                 Pause(args[0]);
                             }
@@ -105,7 +105,7 @@ namespace VirtualAutoClicker
                     case Commands.Resume:
                     case Commands.ResumeAutoClicker:
                         {
-                            if (args is { } && args.Length >= 1)
+                            if (args.Length >= 1)
                             {
                                 Resume(args[0]);
                             }

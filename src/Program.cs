@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace VirtualAutoClicker
 {
@@ -29,7 +28,7 @@ namespace VirtualAutoClicker
                     {
                         CommandHandler.ParseCommand(
                             input.Split(' ')[0],
-                            input.Split(' ').Length > 1 ? input.Split(' ').Skip(1).ToArray() : null
+                            input.Split(' ')[1..]
                         );
                     }
                 }
