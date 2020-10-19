@@ -15,7 +15,7 @@ namespace VirtualAutoClicker
                 return;
             }
 
-            var acWorker = VacEnvironment.GetAcWorker();
+            var acWorker = Program.ACWorker;
             if (acWorker is null)
             {
                 ConsoleHelper.WriteError("AutoClickerWorker was not properly initialized, please restart the application.");
@@ -131,7 +131,7 @@ namespace VirtualAutoClicker
 
         static void StartAutoClicker(string proposedAcName, string processName, Coordinates coordinates, int interval)
         {
-            var acWorker = VacEnvironment.GetAcWorker();
+            var acWorker = Program.ACWorker;
             var acName = proposedAcName;
             if (string.IsNullOrWhiteSpace(acName))
             {
@@ -166,7 +166,7 @@ namespace VirtualAutoClicker
 
         private static void ListClickers()
         {
-            var acWorker = VacEnvironment.GetAcWorker();
+            var acWorker = Program.ACWorker;
             var formattedString = acWorker?.GetAutoClickerStatusString();
 
             if (!string.IsNullOrWhiteSpace(formattedString))
@@ -180,7 +180,7 @@ namespace VirtualAutoClicker
         /// </summary>
         private static void Picnic()
         {
-            var acWorker = VacEnvironment.GetAcWorker();
+            var acWorker = Program.ACWorker;
             acWorker?.Picnic();
 
             ConsoleHelper.WriteMessage("Autoclickers stopped!");
@@ -192,7 +192,7 @@ namespace VirtualAutoClicker
 
         private static AutoClicker? GetAutoclicker(string acName)
         {
-            var acWorker = VacEnvironment.GetAcWorker();
+            var acWorker = Program.ACWorker;
             var ac = acWorker?.AutoClickers.FirstOrDefault(a => a.Value.Name == acName).Value;
             if (ac is null)
             {
