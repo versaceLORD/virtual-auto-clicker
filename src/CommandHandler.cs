@@ -15,12 +15,6 @@ namespace VirtualAutoClicker
                 return;
             }
 
-            if (Program.ACWorker is null)
-            {
-                ConsoleHelper.WriteError("AutoClickerWorker was not properly initialized, please restart the application.");
-                return;
-            }
-
             try
             {
                 Enum.TryParse<Commands>(commandValue, true, out var command);
@@ -186,7 +180,7 @@ namespace VirtualAutoClicker
         private static AutoClicker? GetAutoclicker(string acName)
         {
             var ac = Program.ACWorker.AutoClickers.FirstOrDefault(a => a.Value.Name == acName).Value;
-            if (ac is null)
+            if (ac == null)
             {
                 ConsoleHelper.WriteWarning($"Couldn't find an autoclicker named '{acName}'." +
                                            $" Use command 'list' to see all running autoclickers.");
