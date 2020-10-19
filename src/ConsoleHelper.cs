@@ -17,8 +17,8 @@ namespace VirtualAutoClicker
         }
 
         public static void WriteMessage(string message) => WriteColored(message, ConsoleColor.Gray);
-        public static void WriteWarning(string message) => WriteColored($"VAC >> {message}", ConsoleColor.Yellow);
-        public static void WriteError(string message, Exception? e) => WriteColored($"VAC >> {message} \r\n {e}", ConsoleColor.Red);
+        public static void WriteWarning(string message) => WriteColored(message, ConsoleColor.Yellow);
+        public static void WriteError(string message, Exception? e) => WriteColored($"{message}\r\n{e}", ConsoleColor.Red);
         public static void WriteError(string message) => WriteColored(message, ConsoleColor.Red);
         public static void WriteError(Exception e) => WriteColored($"Error!\r\n{e}", ConsoleColor.Red);
     }
