@@ -148,15 +148,15 @@ namespace VirtualAutoClicker
             {
                 SendMessage(
                     CurrentProcess.MainWindowHandle,
-                    Buttons.WmLbuttondown,
-                    new IntPtr(Buttons.MkLbutton),
+                    (uint)Buttons.WM_LBUTTONDOWN,
+                    new IntPtr((uint)Buttons.MK_LBUTTON),
                     CreateLParam(Coordinates.X,
                         Coordinates.Y));
 
                 SendMessage(
                     CurrentProcess.MainWindowHandle,
-                    Buttons.WmLbuttonup,
-                    new IntPtr(Buttons.MkLbutton),
+                    (uint)Buttons.WM_LBUTTONUP,
+                    new IntPtr((uint)Buttons.MK_LBUTTON),
                     CreateLParam(Coordinates.X, Coordinates.Y));
             }
         }
