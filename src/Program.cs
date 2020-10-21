@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Linq;
 
 namespace VirtualAutoClicker
 {
     class Program
     {
+        public static AutoClickerWorker ACWorker { get; } = new AutoClickerWorker();
+
         public static void Main()
         {
+            Console.ForegroundColor = ConsoleColor.White;
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console is starting!");
-
-            VacEnvironment.Initialize();
 
             StartClosingHandlers();
             Console.Title = "Virtual Autoclicker";
@@ -26,10 +26,7 @@ namespace VirtualAutoClicker
 
                     if (!string.IsNullOrWhiteSpace(input) && input.Length > 0)
                     {
-                        CommandHandler.ParseCommand(
-                            input.Split(' ')[0],
-                            input.Split(' ').Length > 1 ? input.Split(' ').Skip(1).ToArray() : null
-                        );
+                        CommandHandler.ParseCommand(input.Split(' ')[0], input.Split(' ')[1..]);
                     }
                 }
             }
@@ -46,11 +43,11 @@ namespace VirtualAutoClicker
 
                 e.Cancel = true;
 
-                VacEnvironment.GetAcWorker()?.Picnic();
+                ACWorker.Picnic();
                 Environment.Exit(0);
             };
 
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => VacEnvironment.GetAcWorker()?.Picnic();
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => ACWorker.Picnic();
         }
     }
 }

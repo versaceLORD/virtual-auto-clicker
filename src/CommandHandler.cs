@@ -8,17 +8,10 @@ namespace VirtualAutoClicker
 {
     public static class CommandHandler
     {
-        public static void ParseCommand(string commandValue, string[]? args)
+        public static void ParseCommand(string commandValue, string[] args)
         {
             if (string.IsNullOrWhiteSpace(commandValue))
             {
-                return;
-            }
-
-            var acWorker = VacEnvironment.GetAcWorker();
-            if (acWorker is null)
-            {
-                ConsoleHelper.WriteError("AutoClickerWorker was not properly initialized, please restart the application.");
                 return;
             }
 
@@ -31,7 +24,7 @@ namespace VirtualAutoClicker
                     case Commands.Start:
                     case Commands.StartAutoClicker:
                         {
-                            if (args is null || args.Length <= 2)
+                            if (args.Length <= 2)
                             {
                                 ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I N' please" +
                                                            " refer to the readme.md file for further assistance.");
@@ -47,7 +40,7 @@ namespace VirtualAutoClicker
                             var processName = args[0];
 
                             // If the process name is put between double quotation marks
-                            if (args.First().StartsWith('"') && args.First().EndsWith('"'))
+                            if (args[0][0] == '"' && args[0][^1] =='"')
                             {
                                 var pattern = new Regex("\"(.*?)\"");
                                 var matches = pattern.Matches(processName);
@@ -90,7 +83,7 @@ namespace VirtualAutoClicker
                     case Commands.Pause:
                     case Commands.PauseAutoClicker:
                         {
-                            if (args is { } && args.Length >= 1)
+                            if (args.Length >= 1)
                             {
                                 Pause(args[0]);
                             }
@@ -105,7 +98,7 @@ namespace VirtualAutoClicker
                     case Commands.Resume:
                     case Commands.ResumeAutoClicker:
                         {
-                            if (args is { } && args.Length >= 1)
+                            if (args.Length >= 1)
                             {
                                 Resume(args[0]);
                             }
@@ -131,7 +124,6 @@ namespace VirtualAutoClicker
 
         static void StartAutoClicker(string proposedAcName, string processName, Coordinates coordinates, int interval)
         {
-            var acWorker = VacEnvironment.GetAcWorker();
             var acName = proposedAcName;
             if (string.IsNullOrWhiteSpace(acName))
             {
@@ -149,16 +141,14 @@ namespace VirtualAutoClicker
 
             try
             {
-                acWorker?.AutoClickers.Add(acName, autoClicker);
+                Program.ACWorker.AutoClickers.Add(acName, autoClicker);
                 autoClicker.Init();
 
                 ConsoleHelper.WriteMessage($"Autoclicker '{acName}' started!");
             }
             catch (Exception exc)
             {
-                // Something went wrong, ensure the autoclicker
-                // worker doesn't keep track of this instance anymore.
-                acWorker?.RemoveAc(acName);
+                Program.ACWorker.RemoveAc(acName);
 
                 ConsoleHelper.WriteError("Something went wrong when trying to start the autoclicker!", exc);
             }
@@ -166,8 +156,7 @@ namespace VirtualAutoClicker
 
         private static void ListClickers()
         {
-            var acWorker = VacEnvironment.GetAcWorker();
-            var formattedString = acWorker?.GetAutoClickerStatusString();
+            var formattedString = Program.ACWorker.GetAutoClickerStatusString();
 
             if (!string.IsNullOrWhiteSpace(formattedString))
             {
@@ -180,9 +169,7 @@ namespace VirtualAutoClicker
         /// </summary>
         private static void Picnic()
         {
-            var acWorker = VacEnvironment.GetAcWorker();
-            acWorker?.Picnic();
-
+            Program.ACWorker.Picnic();
             ConsoleHelper.WriteMessage("Autoclickers stopped!");
         }
 
@@ -192,8 +179,7 @@ namespace VirtualAutoClicker
 
         private static AutoClicker? GetAutoclicker(string acName)
         {
-            var acWorker = VacEnvironment.GetAcWorker();
-            var ac = acWorker?.AutoClickers.FirstOrDefault(a => a.Value.Name == acName).Value;
+            var ac = Program.ACWorker.AutoClickers.FirstOrDefault(a => a.Value.Name == acName).Value;
             if (ac is null)
             {
                 ConsoleHelper.WriteWarning($"Couldn't find an autoclicker named '{acName}'." +
