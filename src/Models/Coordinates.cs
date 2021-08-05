@@ -1,4 +1,4 @@
-﻿namespace VirtualAutoClicker.Console.Models
+﻿namespace VirtualAutoClicker.Models
 {
     public class Coordinates
     {

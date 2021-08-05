@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using VirtualAutoClicker.Console.Constants;
-using VirtualAutoClicker.Console.Models;
 
-namespace VirtualAutoClicker.Console
+using VirtualAutoClicker.Constants;
+using VirtualAutoClicker.Models;
+
+namespace VirtualAutoClicker
 {
     /// <summary>
     /// This class represents an virtual autoclicker instance. Holds properties and methods required
@@ -17,6 +18,11 @@ namespace VirtualAutoClicker.Console
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
+
+        /// <summary>
+        /// Name of instance
+        /// </summary>
+        public string? Name { get; set; }
 
         public string? ProcessName { get; set; }
 
@@ -40,16 +46,30 @@ namespace VirtualAutoClicker.Console
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            var token = CancellationTokenSource.Token;
-            token.ThrowIfCancellationRequested();
-
             CurrentProcess = Process.GetProcessesByName(ProcessName).First();
             if (CurrentProcess?.MainWindowHandle is null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
             }
 
-            Task.Factory.StartNew(async () =>
+            StartClicker();
+        }
+
+        /// <summary>
+        /// Starts clicker task
+        /// </summary>
+        private void StartClicker()
+        {
+            if (CancellationTokenSource is null)
+            {
+                ConsoleHelper.WriteError("Tried to start a autoclicker's clicking task without a token source");
+                return;
+            }
+
+            var token = CancellationTokenSource.Token;
+            token.ThrowIfCancellationRequested();
+
+            Task.Factory.StartNew(async (_) =>
             {
                 while (true)
                 {
@@ -58,11 +78,11 @@ namespace VirtualAutoClicker.Console
                     await Task.Delay(Interval, token);
                 }
 
-            }, token);
+            }, null, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         /// <summary>
-        /// Call this is something goes very wrong
+        /// Call this is something goes very wrong, or if it's time to end this instance's life (RIP)
         /// </summary>
         public void Picnic()
         {
@@ -72,12 +92,37 @@ namespace VirtualAutoClicker.Console
                 return;
             }
 
+            CancellationTokenSource.Cancel();
+
             Active = false;
+            Interval = int.MaxValue;
             Coordinates = null;
             ProcessName = null;
-            Interval = int.MaxValue;
+        }
 
-            CancellationTokenSource.Cancel();
+        /// <summary>
+        /// Sets active to false and stops the current running task (if running)
+        /// </summary>
+        public void Pause()
+        {
+            Active = false;
+            CancellationTokenSource?.Cancel();
+        }
+
+        /// <summary>
+        /// Renews 'CancellationTokenSource' and starts clicker task
+        /// </summary>
+        public void Resume()
+        {
+            if (Active)
+            {
+                ConsoleHelper.WriteMessage($"Autoclicker '{Name}' is already running!");
+                return;
+            }
+            Active = true;
+            CancellationTokenSource = new CancellationTokenSource();
+
+            StartClicker();
         }
 
         /// <summary>
@@ -94,7 +139,7 @@ namespace VirtualAutoClicker.Console
         /// </summary>
         public void Click()
         {
-            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X == null || Coordinates?.Y == null)
+            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X is null || Coordinates?.Y is null)
             {
                 return;
             }

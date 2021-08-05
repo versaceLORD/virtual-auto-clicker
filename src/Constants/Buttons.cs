@@ -1,4 +1,4 @@
-﻿namespace VirtualAutoClicker.Console.Constants
+﻿namespace VirtualAutoClicker.Constants
 {
     public static class Buttons
     {
