@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace VirtualAutoClicker
 {
-    class Program
+    internal static class Program
     {
-        static void Main()
+        private static void Main()
         {
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console is starting!");
 
@@ -16,35 +16,43 @@ namespace VirtualAutoClicker
 
             ConsoleHelper.WriteMessage("Virtual Autoclicker Console has started!\n\r");
 
-            while (true)
+            while (VacEnvironment.Active)
             {
-                if (Console.ReadKey(true).Key is ConsoleKey.Enter)
+                if (!(Console.ReadKey(true).Key is ConsoleKey.Enter))
                 {
-                    Console.Write("VAC >> ");
-
-                    var input = Console.ReadLine();
-
-                    if (!string.IsNullOrWhiteSpace(input) && input.Length > 0)
-                    {
-                        CommandHandler.ParseCommand(
-                            input.Split(' ')[0],
-                            input.Split(' ').Length > 1 ? input.Split(' ').Skip(1).ToArray() : null
-                        );
-                    }
+                    continue;
                 }
+                
+                Console.Write("VAC >> ");
+
+                var input = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(input) || input.Length <= 0)
+                {
+                    continue;
+                }
+                    
+                var command = VacEnvironment.GetCommand(input.Split(' ')[0]);
+                if (command is null)
+                {
+                    ConsoleHelper.WriteWarning($"No command found named '{command}'");
+                    continue;
+                }
+                
+                command.Execute(input.Split(' ').Skip(1).ToArray());
             }
         }
 
         /// <summary>
         /// Starts all handlers ensuring that the application closes the running autoclicker before exiting.
         /// </summary>
-        public static void StartClosingHandlers()
+        private static void StartClosingHandlers()
         {
             Console.CancelKeyPress += (sender, e) =>
             {
                 ConsoleHelper.WriteWarning("Application closing, running clean up!");
                 e.Cancel = true;
                 VacEnvironment.GetAcWorker()?.Picnic();
+                VacEnvironment.Close();
                 Environment.Exit(0);
             };
 

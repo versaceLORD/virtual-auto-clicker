@@ -1,11 +1,7 @@
-﻿using System;
-
-namespace VirtualAutoClicker.Commands
+﻿namespace VirtualAutoClicker.Commands
 {
-    public interface ICommand : IDisposable
+    public interface ICommand
     {
-        public void Init();
-
-
+        public void Execute(string[] arguments);
     }
 }

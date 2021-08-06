@@ -46,7 +46,7 @@ namespace VirtualAutoClicker
         {
             CancellationTokenSource = new CancellationTokenSource();
 
-            CurrentProcess = Process.GetProcessesByName(ProcessName).First();
+            CurrentProcess = Process.GetProcessesByName(ProcessName).FirstOrDefault();
             if (CurrentProcess?.MainWindowHandle is null)
             {
                 throw new Exception($"There was no process named {ProcessName}, no autoclicker started.");
@@ -71,13 +71,11 @@ namespace VirtualAutoClicker
 
             Task.Factory.StartNew(async (_) =>
             {
-                while (true)
+                while (!token.IsCancellationRequested)
                 {
                     Click();
-
                     await Task.Delay(Interval, token);
                 }
-
             }, null, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
@@ -119,6 +117,7 @@ namespace VirtualAutoClicker
                 ConsoleHelper.WriteMessage($"Autoclicker '{Name}' is already running!");
                 return;
             }
+            
             Active = true;
             CancellationTokenSource = new CancellationTokenSource();
 
@@ -129,7 +128,7 @@ namespace VirtualAutoClicker
         /// Creates parameters which will be sent to simulate coordinates to the SendMessage message.
         /// The coordinate is relative to the upper-left corner of the client area.
         /// </summary>
-        public static IntPtr CreateLParam(int loWord, int hiWord)
+        private static IntPtr CreateLParam(int loWord, int hiWord)
         {
             return (IntPtr)((hiWord << 16) | (loWord & 0xffff));
         }
@@ -137,28 +136,26 @@ namespace VirtualAutoClicker
         /// <summary>
         /// If all neccsary AutoClicker properties are set, send click message to the set process
         /// </summary>
-        public void Click()
+        private void Click()
         {
-            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates?.X is null || Coordinates?.Y is null)
+            if (string.IsNullOrWhiteSpace(ProcessName) || !Active || Coordinates is null || CurrentProcess is null)
             {
                 return;
             }
 
-            if (CurrentProcess is { })
-            {
-                SendMessage(
-                    CurrentProcess.MainWindowHandle,
-                    Buttons.WmLbuttondown,
-                    new IntPtr(Buttons.MkLbutton),
-                    CreateLParam(Coordinates.X,
-                        Coordinates.Y));
+            SendMessage(
+                CurrentProcess.MainWindowHandle,
+                Buttons.WmLbuttondown,
+                new IntPtr(Buttons.MkLbutton),
+                CreateLParam(Coordinates.X, Coordinates.Y)
+            );
 
-                SendMessage(
-                    CurrentProcess.MainWindowHandle,
-                    Buttons.WmLbuttonup,
-                    new IntPtr(Buttons.MkLbutton),
-                    CreateLParam(Coordinates.X, Coordinates.Y));
-            }
+            SendMessage(
+                CurrentProcess.MainWindowHandle,
+                Buttons.WmLbuttonup,
+                new IntPtr(Buttons.MkLbutton),
+                CreateLParam(Coordinates.X, Coordinates.Y)
+            );
         }
     }
 }

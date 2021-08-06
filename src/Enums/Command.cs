@@ -1,16 +1,12 @@
-﻿namespace VirtualAutoClicker.Commands
+﻿namespace VirtualAutoClicker.Enums
 {
-    /// <summary>
-    /// Written in lower case since all commands are entered in lowercase.
-    /// </summary>
-    public enum Commands
+    public enum Command
     {
         Unknown,
-
+        
         List,
         ListAutoClickers,
         ListAll,
-        ShowAll,
 
         StartAutoClicker,
         Start,
