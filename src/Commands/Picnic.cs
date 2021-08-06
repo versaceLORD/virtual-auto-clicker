@@ -7,7 +7,7 @@
             var acWorker = VacEnvironment.GetAcWorker();
             acWorker?.Picnic();
 
-            ConsoleHelper.WriteMessage("Autoclickers stopped!");
+            ConsoleHelper.WriteMessage("All autoclickers stopped!");
         }
     }
 }

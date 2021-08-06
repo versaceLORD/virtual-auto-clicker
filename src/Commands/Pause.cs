@@ -14,6 +14,8 @@
             
             var acWorker = VacEnvironment.GetAcWorker();
             acWorker?.GetAutoclicker(acName)?.Pause();
+
+            ConsoleHelper.WriteMessage($"autoclicker {acName} paused!");
         }
     }
 }

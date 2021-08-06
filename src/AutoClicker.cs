@@ -17,8 +17,8 @@ namespace VirtualAutoClicker
     public class AutoClicker
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
-
+        private static extern int SendMessage(IntPtr hWnd, uint message, int wParam, int lParam);
+        
         /// <summary>
         /// Name of instance
         /// </summary>
@@ -125,15 +125,6 @@ namespace VirtualAutoClicker
         }
 
         /// <summary>
-        /// Creates parameters which will be sent to simulate coordinates to the SendMessage message.
-        /// The coordinate is relative to the upper-left corner of the client area.
-        /// </summary>
-        private static IntPtr CreateLParam(int loWord, int hiWord)
-        {
-            return (IntPtr)((hiWord << 16) | (loWord & 0xffff));
-        }
-
-        /// <summary>
         /// If all neccsary AutoClicker properties are set, send click message to the set process
         /// </summary>
         private void Click()
@@ -143,18 +134,20 @@ namespace VirtualAutoClicker
                 return;
             }
 
+            var lParam = (Coordinates.Y << 16) + Coordinates.X;
+            
             SendMessage(
                 CurrentProcess.MainWindowHandle,
                 Buttons.WmLbuttondown,
-                new IntPtr(Buttons.MkLbutton),
-                CreateLParam(Coordinates.X, Coordinates.Y)
+                0,
+                lParam
             );
-
+            
             SendMessage(
                 CurrentProcess.MainWindowHandle,
                 Buttons.WmLbuttonup,
-                new IntPtr(Buttons.MkLbutton),
-                CreateLParam(Coordinates.X, Coordinates.Y)
+                0,
+                lParam
             );
         }
     }
