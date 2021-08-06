@@ -22,30 +22,34 @@ namespace VirtualAutoClicker.Commands
             }
 
             var processName = arguments[0];
-
-            // If the process name is put between double quotation marks
-            if (arguments[0].StartsWith('"') && arguments[0].EndsWith('"'))
+            
+            var xConversion = int.TryParse(arguments[1].Split(',')[0], out var x);
+            var yConversion = int.TryParse(arguments[1].Split(',')[1], out var y);
+            if (!xConversion || !yConversion)
             {
-                var pattern = new Regex("\"(.*?)\"");
-                var matches = pattern.Matches(processName);
-                if (matches.Count > 0)
-                {
-                    processName = matches[0].Groups[1].Value.Replace("\"", "");
-                }
+                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I N' please refer to the readme.md file for further assistance.");
+                return;
             }
-
+            
             var coordinates = new Coordinates
             {
-                X = int.Parse(arguments[1].Split(',')[0]),
-                Y = int.Parse(arguments[1].Split(',')[1]),
+                X = x,
+                Y = y,
             };
+
+            var intervalConversion = int.TryParse(arguments[2], out var interval);
+            if (!intervalConversion)
+            {
+                ConsoleHelper.WriteWarning("Command usage: 'startautoclicker \"P\" X,Y I N' please refer to the readme.md file for further assistance.");
+                return;
+            }
 
             // Instantiate the new autoclicker
             Start(
                 proposedAcName,
                 processName,
                 coordinates,
-                int.Parse(arguments[2])
+                interval
             );
         }
 

@@ -30,15 +30,20 @@ namespace VirtualAutoClicker
                 {
                     continue;
                 }
-                    
-                var command = VacEnvironment.GetCommand(input.Split(' ')[0]);
+
+                var inputCommand = input.Split(' ')[0];
+                var arguments = ConsoleHelper.GetInputArguments(input.Split(' ').Skip(1).ToList());
+                
+                ConsoleHelper.WriteMessage($"{inputCommand} - {arguments[0]} - {arguments[1]} - {arguments[2]}");
+                
+                var command = VacEnvironment.GetCommand(inputCommand);
                 if (command is null)
                 {
-                    ConsoleHelper.WriteWarning($"No command found named '{command}'");
+                    ConsoleHelper.WriteWarning($"No command found named '{inputCommand}'");
                     continue;
                 }
                 
-                command.Execute(input.Split(' ').Skip(1).ToArray());
+                command.Execute(arguments);
             }
         }
 
