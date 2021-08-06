@@ -1,17 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace VirtualAutoClicker
 {
     public class AutoClickerWorker
     {
-        public Dictionary<string, AutoClicker> AutoClickers { get; set; }
+        public Dictionary<string, AutoClicker> AutoClickers { get; }
 
         public AutoClickerWorker()
         {
             AutoClickers = new Dictionary<string, AutoClicker>();
+        }
+        
+        /// <summary>
+        /// Retrieves an autoclicker with given name
+        /// </summary>
+        /// <param name="acName"></param>
+        /// <returns></returns>
+        public AutoClicker? GetAutoclicker(string acName)
+        {
+            var acWorker = VacEnvironment.GetAcWorker();
+            var ac = acWorker?.AutoClickers.FirstOrDefault(a => a.Value.Name == acName).Value;
+            if (ac is null)
+            {
+                ConsoleHelper.WriteWarning($"Couldn't find an autoclicker named '{acName}'. Use command 'list' to see all running autoclickers.");
+            }
+
+            return ac;
         }
 
         /// <summary>
