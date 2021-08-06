@@ -12,6 +12,8 @@ namespace VirtualAutoClicker
     /// </summary>
     public static class VacEnvironment
     {
+        public const string VersionNumber = "1.1.2";
+
         private static AutoClickerWorker? AutoClickerWorker;
         
         public static bool Active { get; private set; }

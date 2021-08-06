@@ -48,6 +48,15 @@ namespace VirtualAutoClicker
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        public static void WriteStartingMessage()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("- - - - - - - - - - - - - - - - - -");
+            Console.WriteLine($"virtual-auto-clicker - Your idle success [version {VacEnvironment.VersionNumber}]");
+            Console.WriteLine("by @versaceLORD - https://github.com/versaceLORD/virtual-auto-clicker");
+            Console.WriteLine("- - - - - - - - - - - - - - - - - -\n\r");
+        }
+
         public static string[] GetInputArguments(List<string> arguments)
         {
             var processName = new StringBuilder();

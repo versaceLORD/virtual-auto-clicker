@@ -7,14 +7,15 @@ namespace VirtualAutoClicker
     {
         private static void Main()
         {
-            ConsoleHelper.WriteMessage("Virtual Autoclicker Console is starting!");
+            Console.Title = $"Virtual Autoclicker [{VacEnvironment.VersionNumber}]";
+
+            ConsoleHelper.WriteStartingMessage();
 
             VacEnvironment.Initialize();
 
             StartClosingHandlers();
-            Console.Title = "Virtual Autoclicker";
 
-            ConsoleHelper.WriteMessage("Virtual Autoclicker Console has started!\n\r");
+            ConsoleHelper.WriteMessage("Virtual Autoclicker is ready for use - press the enter key to input a command!\n\r");
 
             while (VacEnvironment.Active)
             {
@@ -33,8 +34,6 @@ namespace VirtualAutoClicker
 
                 var inputCommand = input.Split(' ')[0];
                 var arguments = ConsoleHelper.GetInputArguments(input.Split(' ').Skip(1).ToList());
-                
-                ConsoleHelper.WriteMessage($"{inputCommand} - {arguments[0]} - {arguments[1]} - {arguments[2]}");
                 
                 var command = VacEnvironment.GetCommand(inputCommand);
                 if (command is null)
