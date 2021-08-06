@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-
 using VirtualAutoClicker.Models;
 
 namespace VirtualAutoClicker.Commands
