@@ -56,17 +56,25 @@ namespace VirtualAutoClicker
             Console.WriteLine("- - - - - - - - - - - - - - - - - -\n\r");
         }
 
+
+        /// <summary>
+        /// Returns an updated array of input arguments
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns>A rebuilt list of input arguments</returns>
         public static string[] GetInputArguments(List<string> arguments)
         {
-            var processName = new StringBuilder();
+            var processNameBuilder = new StringBuilder();
 
-            if (arguments.Count(arg => arg.Contains("\"", StringComparison.InvariantCultureIgnoreCase)) != 2)
+            if (arguments.Count(arg => arg.Contains("\"", StringComparison.InvariantCultureIgnoreCase)) <= 0)
             {
                 return arguments.ToArray();
             }
 
             var doubleQuoteIndex = arguments.FindIndex(arg => arg.StartsWith('"'));
-            var endingIndex = 0;
+            var endingIndex = -1;
+
+            // Attempt to find the index of the ending double quote
             for (var i = 0; i < arguments.Count; i++)
             {
                 if (arguments[i].EndsWith('"'))
@@ -75,19 +83,26 @@ namespace VirtualAutoClicker
                 }
             }
 
-            if (endingIndex == 0)
+            // We failed to find an ending double quote.
+            if (endingIndex == -1)
             {
                 return arguments.ToArray();
             }
 
             for (var i = doubleQuoteIndex; i <= endingIndex; i++)
             {
-                processName.Append($"{arguments[i]} ");
+                processNameBuilder.Append($"{arguments[i]} ");
             }
-            
+
+            // Ensure the process name does not end with a space.
+            var processName = processNameBuilder.ToString().TrimEnd();
+            processName = processName.Replace("\"", "");
+
             arguments.RemoveRange(doubleQuoteIndex, endingIndex + 1);
+
+            // Rebuild the arguments list with the new "merged" process name
             arguments = arguments
-                .Prepend(processName.ToString().Remove(processName.Length - 1, 1))
+                .Prepend(processName)
                 .ToList();
 
             return arguments.ToArray();
