@@ -1,4 +1,5 @@
 ﻿using System;
+
 using VirtualAutoClicker.Models;
 
 namespace VirtualAutoClicker.Commands
@@ -76,7 +77,7 @@ namespace VirtualAutoClicker.Commands
 
             try
             {
-                acWorker?.AutoClickers?.Add(acName, ac);
+                acWorker?.AutoClickers?.TryAdd(acName, ac);
                 ac.Init();
 
                 ConsoleHelper.WriteMessage($"Autoclicker '{acName}' started!");

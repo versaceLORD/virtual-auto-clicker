@@ -6,6 +6,23 @@
     <RootNamespace>VirtualAutoClicker</RootNamespace>
     <Nullable>enable</Nullable>
     <AssemblyName>VirtualAutoClicker</AssemblyName>
+    <LangVersion>8</LangVersion>
+    <AssemblyVersion>1.1.3</AssemblyVersion>
+    <FileVersion>1.1.3</FileVersion>
+    <Authors>versaceLORD@github</Authors>
+    <Copyright>2021 - versaceLORD@github</Copyright>
+    <PackageProjectUrl>https://github.com/versaceLORD/virtual-auto-clicker</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/versaceLORD/virtual-auto-clicker/blob/main/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/versaceLORD/virtual-auto-clicker.git</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Output\Config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+  </ItemGroup>
 
 </Project>

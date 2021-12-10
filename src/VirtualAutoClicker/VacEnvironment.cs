@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 
 using VirtualAutoClicker.Commands;
 using VirtualAutoClicker.Enums;
+using VirtualAutoClicker.Models;
 
 namespace VirtualAutoClicker
 {
@@ -12,9 +15,11 @@ namespace VirtualAutoClicker
     /// </summary>
     public static class VacEnvironment
     {
-        public const string VersionNumber = "1.1.2";
+        public const string VersionNumber = "1.1.3";
 
         private static AutoClickerWorker? AutoClickerWorker;
+
+        public static Configuration? Configuration;
         
         public static bool Active { get; private set; }
 
@@ -29,6 +34,27 @@ namespace VirtualAutoClicker
             AutoClickerWorker = new AutoClickerWorker();
             
             LoadCommands();
+
+            Configuration = GetConfiguration();
+        }
+
+        private static Configuration? GetConfiguration()
+        {
+            Configuration? parsedJson;
+            
+            using (StreamReader r = new StreamReader(@$"{Directory.GetCurrentDirectory()}\Config.json"))
+            {
+                string fileContent = r.ReadToEnd();
+                parsedJson = JsonSerializer.Deserialize<Configuration>(fileContent, new JsonSerializerOptions()
+                {
+                    AllowTrailingCommas = true,
+                    IgnoreNullValues = false,
+                });
+            }
+
+            ConsoleHelper.WriteMessage(parsedJson is { } ? "Loaded configuration..." : "No configuration found...");
+
+            return parsedJson;
         }
 
         public static AutoClickerWorker? GetAcWorker()
@@ -57,6 +83,8 @@ namespace VirtualAutoClicker
             Commands.TryAdd(Command.Stop, new Picnic());
             Commands.TryAdd(Command.StopAutoClicker, new Picnic());
             Commands.TryAdd(Command.Picnic, new Picnic());
+
+            Commands.TryAdd(Command.GetCoordinates, new GetCoordinates());
         }
 
         public static ICommand? GetCommand(string commandName)

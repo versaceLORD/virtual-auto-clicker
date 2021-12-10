@@ -54,9 +54,12 @@ namespace VirtualAutoClicker
             Console.CancelKeyPress += (sender, e) =>
             {
                 ConsoleHelper.WriteWarning("Application closing, running clean up!");
+                
                 e.Cancel = true;
+                
                 VacEnvironment.GetAcWorker()?.Picnic();
                 VacEnvironment.Close();
+                
                 Environment.Exit(0);
             };
 

@@ -20,5 +20,7 @@
 
         Resume,
         ResumeAutoClicker,
+        
+        GetCoordinates,
     }
 }
