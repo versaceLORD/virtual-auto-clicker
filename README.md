@@ -2,7 +2,9 @@
 
 ### If you have problems setting it up
 
-Helpdesk discord where you can talk to me and other contributors/users https://discord.gg/P5Zr3YV
+I do not track issues related to the applications in Github. If you have any questions or if you are having issues please ask the questions in the Helpdesk discord. In the discord project collaborators, application users and assigned helping members are able to assist you.
+
+Helpdesk discord https://discord.gg/P5Zr3YV
 
 ### Reason for repo's existence
 
