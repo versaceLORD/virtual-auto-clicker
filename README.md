@@ -25,7 +25,7 @@ This simple yet efficient console application fulfills your needs for a quick an
 * To run any command in the application press your Enter key and a `VAC >>` text will appear. Any text you write after this will be parsed as a command. All additional arguments are space separated.
 
 * To start the application run: `startautoclicker "P" X,Y I N`
-  * P = Name of process to start autoclicker in
+  * P = Name of the Windows process to start autoclicker in
   * X = Coordinate on the X-axis
   * Y = Coordinate on the Y-axis
   * I = Interval in milliseconds
