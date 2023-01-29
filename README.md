@@ -20,7 +20,7 @@ This simple yet efficient console application fulfills your needs for a quick an
 
 ### How to use
 
-* Start the `virtual-autoclicker-console.exe` file that will be located in the folder. 
+* Start the `VirtualAutoClicker.exe` file that will be located in the folder. 
 
 * To run any command in the application press your Enter key and a `VAC >>` text will appear. Any text you write after this will be parsed as a command. All additional arguments are space separated.
 
