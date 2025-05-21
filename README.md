@@ -1,11 +1,5 @@
 ## virtual-auto-clicker - Your idle success
 
-### If you have problems setting it up
-
-I do not track issues related to the applications in Github. If you have any questions or if you are having issues please ask the questions in the Helpdesk discord. In the discord project collaborators, application users and assigned helping members are able to assist you.
-
-Helpdesk discord https://discord.gg/P5Zr3YV
-
 ### Reason for repo's existence
 
 There is a bunch of resources out there related to autoclickers. But on the windows platform I failed to find a good alternative for an autoclicker that allowed you to still be in control of your mouse.
