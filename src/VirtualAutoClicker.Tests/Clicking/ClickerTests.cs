@@ -128,6 +128,17 @@ public sealed class ClickerTests
         await WaitForStateAsync(clicker, ClickerState.Faulted);
         Assert.IsNotNull(clicker.FaultReason);
         Assert.Contains("closed", clicker.FaultReason);
+        Assert.AreEqual($"failed: {clicker.FaultReason}", clicker.StatusText);
+    }
+
+    [TestMethod]
+    public async Task StatusText_NotFaulted_IsStateName()
+    {
+        await using var h = new TestHarness();
+        await using var clicker = h.CreateClicker();
+        clicker.Start();
+
+        Assert.AreEqual("Running", clicker.StatusText);
     }
 
     [TestMethod]
