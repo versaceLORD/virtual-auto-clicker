@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Removed NuGet lock files; packages are restored only from nuget.org via `nuget.config`, at the exact versions in `Directory.Packages.props`.
+
 ## 2.0.0
 
 Full modernization of the code base.

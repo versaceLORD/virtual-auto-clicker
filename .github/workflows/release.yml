@@ -81,8 +81,8 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restore (locked)
-        run: dotnet restore --locked-mode
+      - name: Restore
+        run: dotnet restore
 
       - name: Test
         run: dotnet test -c Release --no-restore
@@ -111,9 +111,9 @@ jobs:
         with:
           global-json-file: global.json
 
-      # Locked restore: release builds use exactly the package versions in packages.lock.json.
-      - name: Restore (locked)
-        run: dotnet restore src/VirtualAutoClicker --locked-mode
+      # Restores only from nuget.org (see nuget.config) at the exact versions in Directory.Packages.props.
+      - name: Restore
+        run: dotnet restore src/VirtualAutoClicker
 
       - name: Publish (standalone, Native AOT)
         if: matrix.flavor == 'standalone'

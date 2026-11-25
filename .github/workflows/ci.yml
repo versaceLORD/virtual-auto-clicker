@@ -34,8 +34,8 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restore (locked)
-        run: dotnet restore --locked-mode
+      - name: Restore
+        run: dotnet restore
 
       - name: Check formatting
         run: dotnet format --verify-no-changes --no-restore
@@ -78,8 +78,8 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restore (locked)
-        run: dotnet restore src/VirtualAutoClicker --locked-mode
+      - name: Restore
+        run: dotnet restore src/VirtualAutoClicker
 
       - name: Publish (standalone, Native AOT)
         if: matrix.flavor == 'standalone'
