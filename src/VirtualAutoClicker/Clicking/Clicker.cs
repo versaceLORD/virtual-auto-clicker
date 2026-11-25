@@ -85,6 +85,23 @@ internal sealed class Clicker : IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// The state for display, e.g. <c>Running</c> or <c>failed: window closed</c>.
+    /// State and fault reason are read together so they always match.
+    /// </summary>
+    public string StatusText
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _state == ClickerState.Faulted && _faultReason is { } reason
+                    ? $"failed: {reason}"
+                    : _state.ToString();
+            }
+        }
+    }
+
     public long ClickCount => Interlocked.Read(ref _clickCount);
 
     /// <summary>Starts a newly created clicker.</summary>
