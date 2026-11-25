@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore
+        run: dotnet restore --locked-mode
+
+      - name: Check formatting
+        run: dotnet format --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Test
+        run: dotnet test -c Release --no-build --coverage --coverage-output-format cobertura --report-trx --results-directory artifacts/TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: artifacts/TestResults/
+          if-no-files-found: ignore
+
+  publish:
+    # Verifies Native AOT publish (no trim/AOT warnings) on every change.
+    needs: build
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            os: windows-latest
+          - rid: win-arm64
+            os: windows-11-arm
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Publish (Native AOT)
+        run: dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: VirtualAutoClicker-${{ matrix.rid }}
+          path: artifacts/publish/VirtualAutoClicker/release_${{ matrix.rid }}/VirtualAutoClicker.exe

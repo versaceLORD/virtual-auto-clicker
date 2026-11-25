@@ -2,10 +2,29 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>VirtualAutoClicker</RootNamespace>
-    <Nullable>enable</Nullable>
     <AssemblyName>VirtualAutoClicker</AssemblyName>
+    <RootNamespace>VirtualAutoClicker</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <!-- Required by the [LibraryImport] source generator. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Native AOT single-file publish -->
+    <PublishAot>true</PublishAot>
+    <IsAotCompatible>true</IsAotCompatible>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <PublishDocumentationFile>false</PublishDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="VirtualAutoClicker.Tests" />
+  </ItemGroup>
 
 </Project>

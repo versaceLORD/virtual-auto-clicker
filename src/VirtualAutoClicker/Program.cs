@@ -1,66 +1,40 @@
-﻿using System;
-using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using VirtualAutoClicker;
+using VirtualAutoClicker.Cli;
+using VirtualAutoClicker.Clicking;
+using VirtualAutoClicker.Interop;
 
-namespace VirtualAutoClicker
+if (!Console.IsOutputRedirected)
 {
-    internal static class Program
-    {
-        private static void Main()
-        {
-            Console.Title = $"Virtual Autoclicker [{VacEnvironment.VersionNumber}]";
-
-            ConsoleHelper.WriteStartingMessage();
-
-            VacEnvironment.Initialize();
-
-            StartClosingHandlers();
-
-            ConsoleHelper.WriteMessage("Virtual Autoclicker is ready for use - press the enter key to input a command!\n\r");
-
-            while (VacEnvironment.Active)
-            {
-                if (!(Console.ReadKey(true).Key is ConsoleKey.Enter))
-                {
-                    continue;
-                }
-                
-                Console.Write("VAC >> ");
-
-                var input = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(input) || input.Length <= 0)
-                {
-                    continue;
-                }
-
-                var inputCommand = input.Split(' ')[0];
-                var arguments = ConsoleHelper.GetInputArguments(input.Split(' ').Skip(1).ToList());
-                
-                var command = VacEnvironment.GetCommand(inputCommand);
-                if (command is null)
-                {
-                    ConsoleHelper.WriteWarning($"No command found named '{inputCommand}'");
-                    continue;
-                }
-                
-                command.Execute(arguments);
-            }
-        }
-
-        /// <summary>
-        /// Starts all handlers ensuring that the application closes the running autoclicker before exiting.
-        /// </summary>
-        private static void StartClosingHandlers()
-        {
-            Console.CancelKeyPress += (sender, e) =>
-            {
-                ConsoleHelper.WriteWarning("Application closing, running clean up!");
-                e.Cancel = true;
-                VacEnvironment.GetAcWorker()?.Picnic();
-                VacEnvironment.Close();
-                Environment.Exit(0);
-            };
-
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => VacEnvironment.GetAcWorker()?.Picnic();
-        }
-    }
+    Console.Title = $"Virtual Autoclicker [{AppInfo.Version}]";
 }
+
+var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+{
+    // Command-line arguments are parsed by System.CommandLine, not by configuration.
+    ContentRootPath = AppContext.BaseDirectory,
+});
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.SingleLine = true;
+    options.TimestampFormat = "HH:mm:ss ";
+});
+builder.Logging.SetMinimumLevel(LogLevel.Warning);
+
+builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
+
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IMouseInput, Win32MouseInput>();
+builder.Services.AddSingleton<IWindowLocator, ProcessWindowLocator>();
+builder.Services.AddSingleton<IReplConsole, SystemConsole>();
+builder.Services.AddSingleton<ClickerManager>();
+builder.Services.AddSingleton<CliCommands>();
+builder.Services.AddSingleton(new StartupArguments(args));
+builder.Services.AddHostedService<ReplHostedService>();
+
+using var host = builder.Build();
+await host.RunAsync().ConfigureAwait(false);

@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+    <File Path="CHANGELOG.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/VirtualAutoClicker/VirtualAutoClicker.csproj" />
+    <Project Path="src/VirtualAutoClicker.Tests/VirtualAutoClicker.Tests.csproj" />
+  </Folder>
+</Solution>

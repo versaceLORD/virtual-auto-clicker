@@ -1,0 +1,10 @@
+# Normalize line endings in the repository; check out with the platform default.
+* text=auto
+
+*.cs     text diff=csharp
+*.csproj text
+*.props  text
+*.slnx   text
+*.md     text diff=markdown
+*.yml    text
+*.json   text

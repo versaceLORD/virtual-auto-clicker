@@ -35,3 +35,8 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# Test results, logs and build artifacts
+TestResults/
+*.binlog
+artifacts/

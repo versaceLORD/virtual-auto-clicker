@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+    <Version>2.0.0</Version>
+    <Authors>Emil Widehov</Authors>
+    <Product>Virtual Auto Clicker</Product>
+    <Copyright>Copyright 2020-2026 Emil Widehov</Copyright>
+    <RepositoryUrl>https://github.com/versaceLORD/virtual-auto-clicker</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>
