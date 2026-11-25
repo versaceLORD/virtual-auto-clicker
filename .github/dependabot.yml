@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    # Wait before proposing brand-new versions, so compromised or yanked
+    # releases are usually caught before they reach this repo.
+    cooldown:
+      default-days: 7
+    groups:
+      microsoft-extensions:
+        patterns:
+          - Microsoft.Extensions.*
+      mstest:
+        patterns:
+          - MSTest*
+
+  # Workflows pin actions to commit SHAs; Dependabot updates the SHA and the version comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - '*'

@@ -1,54 +1,93 @@
 ## virtual-auto-clicker - Your idle success
 
+[![CI](https://github.com/versaceLORD/virtual-auto-clicker/actions/workflows/ci.yml/badge.svg)](https://github.com/versaceLORD/virtual-auto-clicker/actions/workflows/ci.yml)
+
 ### Reason for repo's existence
 
 There is a bunch of resources out there related to autoclickers. But on the windows platform I failed to find a good alternative for an autoclicker that allowed you to still be in control of your mouse.
 
-This simple yet efficient console application fulfills your needs for a quick and effective clicker while still letting you using your PC freely!
+This simple yet efficient console application fulfills your needs for a quick and effective clicker while still letting you use your PC freely! Clicks are sent straight to the target window in the background; your real cursor never moves.
+
+### Requirements
+
+* Windows 10 or Windows 11, 64-bit (x64) or 32-bit (x86).
+* The *standalone* download needs nothing else. The *framework-dependent* download needs the [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) for the same architecture.
 
 ### How to download
 
-* In the [releases](https://github.com/versaceLORD/virtual-auto-clicker/releases) tab you will find a download for windows x64&x86 for each version of the application. 
+Every version on the [releases](https://github.com/versaceLORD/virtual-auto-clicker/releases) page has four zips:
 
-* Download the correct version (x64/x86) for your system, no further configuration or additional downloads are necessary as the download is a "stand-alone" application.
+| Zip | Windows | Needs .NET installed? |
+|---|---|---|
+| `VirtualAutoClicker-<version>-win-x64-standalone.zip` | 64-bit | No |
+| `VirtualAutoClicker-<version>-win-x86-standalone.zip` | 32-bit | No |
+| `VirtualAutoClicker-<version>-win-x64-framework-dependent.zip` | 64-bit | Yes, .NET 10 Runtime (x64) |
+| `VirtualAutoClicker-<version>-win-x86-framework-dependent.zip` | 32-bit | Yes, .NET 10 Runtime (x86) |
+
+If you're unsure, take **win-x64-standalone**. The framework-dependent builds are smaller (about 3 MB instead of about 5 MB) but won't start without the runtime.
+
+Checksums are in `SHA256SUMS.txt`, and each zip has a GitHub build provenance attestation (`gh attestation verify <zip> -R versaceLORD/virtual-auto-clicker`).
 
 ### How to use
 
-* Start the `virtual-autoclicker-console.exe` file that will be located in the folder. 
+Start `VirtualAutoClicker.exe`. You get a `VAC >>` prompt; type a command and press Enter.
 
-* To run any command in the application press your Enter key and a `VAC >>` text will appear. Any text you write after this will be parsed as a command. All additional arguments are space separated.
+```text
+VAC >> start "Firestone" 450,450 50
+Clicker 'clicker-1' started on Firestone (pid 1234) at 450,450 every 50 ms.
+```
 
-* To start the application run: `startautoclicker "P" X,Y I N`
-  * P = Name of the Windows process to start autoclicker in
-  * X = Coordinate on the X-axis
-  * Y = Coordinate on the Y-axis
-  * I = Interval in milliseconds
-  * N = Name of the autoclicker instance. This is an optional parameter, and the autoclicker works just fine without a custom name.
-  Giving it a custom name is useful if you plan to use multiple autoclickers simultaneously
-  * Example command: `startautoclicker "Firestone" 450,450 50`
-    * Coordinates are relative to the top left corner of the entered process so for reference, coordinates (0,0) is the top left corner.  
+`start "P" X,Y I [N]`
 
-* To close the autoclicker, run: `stop`.
+* P = Name of the Windows process to click in (as shown in Task Manager's *Details* tab, `.exe` is optional). Quote names that contain spaces.
+* X,Y = Coordinates relative to the top-left corner of the window's client area (0,0). Use `coords` to find them.
+* I = Interval in milliseconds (at least 1).
+* N = Optional name of the clicker, useful when running several clickers. Defaults to `clicker-1`, `clicker-2`, ...
+* `--mode send` delivers clicks synchronously instead of posting them; try it if a game ignores the default mode.
+
+You can also pass a command directly when starting the program, e.g. `VirtualAutoClicker.exe start "Firestone" 450,450 50`. If a clicker was started the prompt stays open so you can manage it.
+
+To quit, type `exit` (or press Ctrl+C). All clickers are stopped when the program closes.
 
 ## Full list of commands
 
-Please refer to the descriptions of the abbreviations in the how to use part of this document as they will be used here as well.
+Commands are case-insensitive. Type `help` or `<command> --help` for details.
 
-* To start the application run: `startautoclicker "P" X,Y I N`
+| Command | Aliases | Description |
+|---|---|---|
+| `start "P" X,Y I [N] [--mode post\|send]` | `startautoclicker` | Start a new clicker |
+| `pause N` | `pauseautoclicker` | Pause a clicker |
+| `resume N` | `resumeautoclicker` | Resume a paused clicker, or restart a failed one once its process is back |
+| `stop [N]` | `picnic`, `stopautoclicker` | Stop and remove clicker N, or all clickers when N is omitted |
+| `list` | `listall`, `listautoclickers` | Show all clickers with their state and click count |
+| `coords "P" [--delay S]` | `pick` | After S seconds (default 3), print the cursor position relative to P's window |
+| `help` | | Show all commands |
+| `exit` | `quit` | Stop all clickers and quit |
 
-* To temporarily stop the autoclicker, run `pause N`
+### Notes
 
-* To temporarily resume a paused autoclicker, run `resume N`
+* If the target window is closed, the clicker re-attaches to a new window of the same process when it can, otherwise it is marked *failed* (see `list`).
+* The program is per-monitor DPI aware, so `coords` reports physical pixels. On scaled displays, use `coords` rather than measuring by hand.
+* In the source, stopping all clickers is referred to as `picnic`; if you watch any twitch streams you probably get the reference. :)
 
-* To list all started autoclickers, run `list`
+## Building from source
 
-* To stop all started autoclickers run `stop` or `picnic`
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
-## Notes
+```shell
+dotnet build
+dotnet test
+# Standalone (Native AOT), output in artifacts/publish
+dotnet publish src/VirtualAutoClicker -c Release -r win-x64
+# Framework-dependent single file
+dotnet publish src/VirtualAutoClicker -c Release -r win-x64 --self-contained false -p:PublishAot=false -p:PublishSingleFile=true
+```
 
-_This repository is very minimalistic and made for a very specific use, the code should not be seen as best practise or what type of code standard I personally advocate._ 
+Use `-r win-x86` for 32-bit. Native AOT publishing needs the *Desktop development with C++* Visual Studio workload.
 
-In the source all references to stopping is refered to as `picnic`, if you watch any twitch streams you probably get the reference. :)
+## Releasing
+
+Merging a PR into `main` creates a GitHub release automatically when `<Version>` in `Directory.Build.props` hasn't been released yet. To ship a new version, bump `<Version>` (and update `CHANGELOG.md`) in the PR. Merges that don't change the version don't create a release.
 
 ## License
 ```
@@ -56,5 +95,5 @@ Apache License
 Version 2.0, January 2004
 http://www.apache.org/licenses/
 
-Copyright 2020 Emil Widehov/@versaceLORD
+Copyright 2020-2026 Emil Widehov/@versaceLORD
 ```
