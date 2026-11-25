@@ -7,8 +7,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
+# No permissions by default; each job opts in to the minimum it needs.
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,17 +20,21 @@ env:
 
 jobs:
   build:
+    name: Build and test
     runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read # check out the repository
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-dotnet@v6
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
-          cache: true
-          cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore
+      - name: Restore (locked)
         run: dotnet restore --locked-mode
 
       - name: Check formatting
@@ -44,39 +48,55 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test-results
           path: artifacts/TestResults/
           if-no-files-found: ignore
+          retention-days: 14
 
   publish:
     # Verifies every release variant publishes (no trim/AOT warnings) on every change.
+    name: Publish ${{ matrix.rid }} ${{ matrix.flavor }}
     needs: build
     strategy:
       matrix:
         rid: [win-x86, win-x64]
         flavor: [standalone, framework-dependent]
     runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read # check out the repository
+    env:
+      RID: ${{ matrix.rid }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-dotnet@v6
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 
+      - name: Restore (locked)
+        run: dotnet restore src/VirtualAutoClicker --locked-mode
+
       - name: Publish (standalone, Native AOT)
         if: matrix.flavor == 'standalone'
-        run: dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror -o artifacts/out
+        shell: pwsh
+        run: dotnet publish src/VirtualAutoClicker -c Release -r $env:RID --no-restore -warnaserror -o artifacts/out
 
       - name: Publish (framework-dependent)
         if: matrix.flavor == 'framework-dependent'
+        shell: pwsh
         run: >
-          dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror
+          dotnet publish src/VirtualAutoClicker -c Release -r $env:RID --no-restore -warnaserror
           --self-contained false -p:PublishAot=false -p:PublishSingleFile=true
           -o artifacts/out
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: VirtualAutoClicker-${{ matrix.rid }}-${{ matrix.flavor }}
           path: artifacts/out/VirtualAutoClicker.exe
+          if-no-files-found: error
+          retention-days: 14

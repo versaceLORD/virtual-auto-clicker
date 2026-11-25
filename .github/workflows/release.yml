@@ -9,9 +9,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
+# No permissions by default; each job opts in to the minimum it needs.
+permissions: {}
 
+# Never run two releases at once, and never cancel a release half-way.
 concurrency:
   group: release
   cancel-in-progress: false
@@ -22,27 +23,36 @@ env:
 
 jobs:
   version:
+    name: Determine version
     # Manual runs from other branches never release.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read # check out the repository
     outputs:
       version: ${{ steps.version.outputs.version }}
       release: ${{ steps.version.outputs.release }}
       prerelease: ${{ steps.version.outputs.prerelease }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Read version and check for an existing tag
         id: version
         shell: pwsh
         run: |
-          $version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
-          $version = "$version".Trim()
-          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') {
+          $version = "$(([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1)".Trim()
+
+          # Strict SemVer: the value is used in file names, tags and release titles.
+          if ($version -cnotmatch '\A\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?\z') {
             throw "Version '$version' in Directory.Build.props is not a valid SemVer version."
           }
 
           $tags = git ls-remote --tags origin "refs/tags/$version" "refs/tags/v$version"
+          if ($LASTEXITCODE -ne 0) { throw "Could not list remote tags." }
+
           if ($tags) {
             "::notice::Version $version is already released. Bump <Version> in Directory.Build.props to create a new release."
             "release=false" >> $env:GITHUB_OUTPUT
@@ -55,98 +65,160 @@ jobs:
           "prerelease=$($version.Contains('-').ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
 
   test:
+    name: Test
     needs: version
     if: needs.version.outputs.release == 'true'
     runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read # check out the repository
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-dotnet@v6
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 
+      - name: Restore (locked)
+        run: dotnet restore --locked-mode
+
       - name: Test
-        run: dotnet test -c Release
+        run: dotnet test -c Release --no-restore
 
   publish:
+    name: Publish ${{ matrix.rid }} ${{ matrix.flavor }}
     needs: [version, test]
     strategy:
       matrix:
         rid: [win-x86, win-x64]
         flavor: [standalone, framework-dependent]
     runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read # check out the repository
+    env:
+      RID: ${{ matrix.rid }}
+      FLAVOR: ${{ matrix.flavor }}
+      VERSION: ${{ needs.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-dotnet@v6
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 
+      # Locked restore: release builds use exactly the package versions in packages.lock.json.
+      - name: Restore (locked)
+        run: dotnet restore src/VirtualAutoClicker --locked-mode
+
       - name: Publish (standalone, Native AOT)
         if: matrix.flavor == 'standalone'
+        shell: pwsh
         run: >
-          dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror
-          -p:Version=${{ needs.version.outputs.version }}
+          dotnet publish src/VirtualAutoClicker -c Release -r $env:RID --no-restore -warnaserror
+          -p:Version=$env:VERSION
           -o artifacts/out
 
       - name: Publish (framework-dependent, needs .NET 10 runtime)
         if: matrix.flavor == 'framework-dependent'
+        shell: pwsh
         run: >
-          dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror
+          dotnet publish src/VirtualAutoClicker -c Release -r $env:RID --no-restore -warnaserror
           --self-contained false -p:PublishAot=false -p:PublishSingleFile=true
-          -p:Version=${{ needs.version.outputs.version }}
+          -p:Version=$env:VERSION
           -o artifacts/out
 
       - name: Package
         shell: pwsh
         run: |
-          $name = "VirtualAutoClicker-${{ needs.version.outputs.version }}-${{ matrix.rid }}-${{ matrix.flavor }}"
+          $name = "VirtualAutoClicker-$env:VERSION-$env:RID-$env:FLAVOR"
           New-Item -ItemType Directory -Force -Path artifacts/release | Out-Null
           Compress-Archive -Path artifacts/out/VirtualAutoClicker.exe, README.md, LICENSE -DestinationPath "artifacts/release/$name.zip"
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-${{ matrix.rid }}-${{ matrix.flavor }}
           path: artifacts/release/
+          if-no-files-found: error
+          retention-days: 7
 
   release:
+    name: Create GitHub release
     needs: [version, publish]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
-      contents: write
-      id-token: write
-      attestations: write
+      contents: write # create the tag and the release
+      id-token: write # sign the build provenance attestation (Sigstore OIDC)
+      attestations: write # store the build provenance attestation
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      PRERELEASE: ${{ needs.version.outputs.prerelease }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: release-*
           merge-multiple: true
           path: release
 
+      - name: Verify release files
+        working-directory: release
+        run: |
+          expected=$(printf '%s\n' \
+            "VirtualAutoClicker-$VERSION-win-x64-framework-dependent.zip" \
+            "VirtualAutoClicker-$VERSION-win-x64-standalone.zip" \
+            "VirtualAutoClicker-$VERSION-win-x86-framework-dependent.zip" \
+            "VirtualAutoClicker-$VERSION-win-x86-standalone.zip")
+          actual=$(ls -1 | LC_ALL=C sort)
+          if [ "$expected" != "$actual" ]; then
+            echo "::error::Unexpected release files:"
+            echo "$actual"
+            exit 1
+          fi
+
       - name: Checksums
         working-directory: release
-        run: sha256sum *.zip > SHA256SUMS.txt
+        run: sha256sum -- *.zip > SHA256SUMS.txt
 
-      - uses: actions/attest-build-provenance@v4
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: release/*.zip
 
-      - uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ needs.version.outputs.version }}
-          target_commitish: ${{ github.sha }}
-          name: ${{ needs.version.outputs.version }}
-          prerelease: ${{ needs.version.outputs.prerelease }}
-          generate_release_notes: true
-          files: release/*
-          body: |
-            ## Downloads
+      - name: Create release
+        run: |
+          # Re-check right before publishing, so an existing tag is never reused or moved.
+          for tag in "$VERSION" "v$VERSION"; do
+            if gh api "repos/$GH_REPO/git/ref/tags/$tag" --silent 2>/dev/null; then
+              echo "::error::Tag $tag already exists."
+              exit 1
+            fi
+          done
 
-            | File | Runs on | Needs .NET installed? |
-            |---|---|---|
-            | `*-win-x64-standalone.zip` | 64-bit Windows | No |
-            | `*-win-x86-standalone.zip` | 32-bit Windows | No |
-            | `*-win-x64-framework-dependent.zip` | 64-bit Windows | Yes, the [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (x64) |
-            | `*-win-x86-framework-dependent.zip` | 32-bit Windows | Yes, the [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (x86) |
+          cat > notes.md <<'EOF'
+          ## Downloads
 
-            If you're unsure, pick **win-x64-standalone**. Verify downloads with `SHA256SUMS.txt`.
+          | File | Runs on | Needs .NET installed? |
+          |---|---|---|
+          | `*-win-x64-standalone.zip` | 64-bit Windows | No |
+          | `*-win-x86-standalone.zip` | 32-bit Windows | No |
+          | `*-win-x64-framework-dependent.zip` | 64-bit Windows | Yes, the [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (x64) |
+          | `*-win-x86-framework-dependent.zip` | 32-bit Windows | Yes, the [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (x86) |
+
+          If you're unsure, pick **win-x64-standalone**. Verify downloads with `SHA256SUMS.txt`, or with `gh attestation verify <zip> -R versaceLORD/virtual-auto-clicker`.
+          EOF
+
+          flags=()
+          if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); fi
+
+          gh release create "$VERSION" release/* \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --notes-file notes.md \
+            --generate-notes \
+            "${flags[@]}"
