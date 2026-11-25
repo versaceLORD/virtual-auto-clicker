@@ -2,11 +2,11 @@
 
 ## 2.0.0
 
-Full modernization of the code base. See `MODERNIZATION_PLAN.md` for the background.
+Full modernization of the code base.
 
 ### Breaking changes
 
-* Requires Windows 10/11. Releases are Native AOT single-file executables for **win-x64** and **win-arm64**; **win-x86 is no longer published**.
+* Requires Windows 10/11 (x64 or x86). Each release has a *standalone* Native AOT exe (no .NET needed) and a *framework-dependent* single-file exe (needs the .NET 10 Runtime) for both **win-x64** and **win-x86**.
 * The executable is `VirtualAutoClicker.exe`.
 * Clickers without a name are now called `clicker-1`, `clicker-2`, ... instead of a GUID.
 * Starting a clicker with a name that is already in use is rejected.
@@ -44,7 +44,7 @@ Full modernization of the code base. See `MODERNIZATION_PLAN.md` for the backgro
 * Generic Host with dependency injection and source-generated logging; no more static global state.
 * System.CommandLine for parsing; `[LibraryImport]` source-generated interop.
 * MSTest 4 on Microsoft.Testing.Platform, 67 tests using `FakeTimeProvider`.
-* GitHub Actions on Windows: format check, build, test with coverage, AOT publish; tag-triggered releases with checksums and build provenance; Dependabot.
+* GitHub Actions on Windows: format check, build, test with coverage, publish of all release variants. Merging to `main` with a new `<Version>` creates the GitHub release automatically, with checksums and build provenance. Dependabot.
 
 ## 1.1.2 and earlier
 

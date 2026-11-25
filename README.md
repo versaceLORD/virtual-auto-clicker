@@ -10,13 +10,23 @@ This simple yet efficient console application fulfills your needs for a quick an
 
 ### Requirements
 
-* Windows 10 or Windows 11, x64 or ARM64.
-* Nothing else: the download is a single native executable, no .NET runtime needed.
+* Windows 10 or Windows 11, 64-bit (x64) or 32-bit (x86).
+* The *standalone* download needs nothing else. The *framework-dependent* download needs the [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) for the same architecture.
 
 ### How to download
 
-* In the [releases](https://github.com/versaceLORD/virtual-auto-clicker/releases) tab you will find a zip for `win-x64` and `win-arm64` for each version.
-* Each zip has a `.sha256` checksum and a GitHub build provenance attestation (`gh attestation verify <zip> -R versaceLORD/virtual-auto-clicker`).
+Every version on the [releases](https://github.com/versaceLORD/virtual-auto-clicker/releases) page has four zips:
+
+| Zip | Windows | Needs .NET installed? |
+|---|---|---|
+| `VirtualAutoClicker-<version>-win-x64-standalone.zip` | 64-bit | No |
+| `VirtualAutoClicker-<version>-win-x86-standalone.zip` | 32-bit | No |
+| `VirtualAutoClicker-<version>-win-x64-framework-dependent.zip` | 64-bit | Yes, .NET 10 Runtime (x64) |
+| `VirtualAutoClicker-<version>-win-x86-framework-dependent.zip` | 32-bit | Yes, .NET 10 Runtime (x86) |
+
+If you're unsure, take **win-x64-standalone**. The framework-dependent builds are smaller (about 3 MB instead of about 5 MB) but won't start without the runtime.
+
+Checksums are in `SHA256SUMS.txt`, and each zip has a GitHub build provenance attestation (`gh attestation verify <zip> -R versaceLORD/virtual-auto-clicker`).
 
 ### How to use
 
@@ -67,10 +77,17 @@ Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 ```shell
 dotnet build
 dotnet test
-dotnet publish src/VirtualAutoClicker -c Release -r win-x64   # Native AOT, output in artifacts/publish
+# Standalone (Native AOT), output in artifacts/publish
+dotnet publish src/VirtualAutoClicker -c Release -r win-x64
+# Framework-dependent single file
+dotnet publish src/VirtualAutoClicker -c Release -r win-x64 --self-contained false -p:PublishAot=false -p:PublishSingleFile=true
 ```
 
-Native AOT publishing needs the *Desktop development with C++* Visual Studio workload (plus the ARM64 build tools for `win-arm64`).
+Use `-r win-x86` for 32-bit. Native AOT publishing needs the *Desktop development with C++* Visual Studio workload.
+
+## Releasing
+
+Merging a PR into `main` creates a GitHub release automatically when `<Version>` in `Directory.Build.props` hasn't been released yet. To ship a new version, bump `<Version>` (and update `CHANGELOG.md`) in the PR. Merges that don't change the version don't create a release.
 
 ## License
 ```

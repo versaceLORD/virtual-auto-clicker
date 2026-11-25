@@ -5,7 +5,7 @@
     <AssemblyName>VirtualAutoClicker</AssemblyName>
     <RootNamespace>VirtualAutoClicker</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
     <!-- Required by the [LibraryImport] source generator. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 

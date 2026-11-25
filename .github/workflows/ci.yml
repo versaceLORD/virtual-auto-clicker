@@ -51,16 +51,13 @@ jobs:
           if-no-files-found: ignore
 
   publish:
-    # Verifies Native AOT publish (no trim/AOT warnings) on every change.
+    # Verifies every release variant publishes (no trim/AOT warnings) on every change.
     needs: build
     strategy:
       matrix:
-        include:
-          - rid: win-x64
-            os: windows-latest
-          - rid: win-arm64
-            os: windows-11-arm
-    runs-on: ${{ matrix.os }}
+        rid: [win-x86, win-x64]
+        flavor: [standalone, framework-dependent]
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
 
@@ -68,10 +65,18 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Publish (Native AOT)
-        run: dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror
+      - name: Publish (standalone, Native AOT)
+        if: matrix.flavor == 'standalone'
+        run: dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror -o artifacts/out
+
+      - name: Publish (framework-dependent)
+        if: matrix.flavor == 'framework-dependent'
+        run: >
+          dotnet publish src/VirtualAutoClicker -c Release -r ${{ matrix.rid }} -warnaserror
+          --self-contained false -p:PublishAot=false -p:PublishSingleFile=true
+          -o artifacts/out
 
       - uses: actions/upload-artifact@v7
         with:
-          name: VirtualAutoClicker-${{ matrix.rid }}
-          path: artifacts/publish/VirtualAutoClicker/release_${{ matrix.rid }}/VirtualAutoClicker.exe
+          name: VirtualAutoClicker-${{ matrix.rid }}-${{ matrix.flavor }}
+          path: artifacts/out/VirtualAutoClicker.exe
